@@ -2,6 +2,8 @@ package dev.woori.wooriLog.global.auth.jwt;
 
 import dev.woori.wooriLog.global.auth.Constants;
 import dev.woori.wooriLog.global.exception.JwtTokenException;
+import dev.woori.wooriLog.global.exception.JwtTokenExpiredException;
+import dev.woori.wooriLog.global.exception.JwtTokenInvalidException;
 import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -72,7 +74,7 @@ public class JwtGenerator {
     }
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(encodeSecretKeyToBase64().getBytes());
+        return Keys.hmacShaKeyFor(jwtProperties.secret().getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     private String encodeSecretKeyToBase64() {
@@ -85,10 +87,10 @@ public class JwtGenerator {
             return jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             //만료된 jwt 예외처리
-            throw new JwtTokenException(ErrorBaseCode.EXPIRED_TOKEN);
+            throw new JwtTokenExpiredException(ErrorBaseCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException | MalformedJwtException | SecurityException | IllegalArgumentException e) {
             //잘못된 jwt 예외처리
-            throw new JwtTokenException(ErrorBaseCode.INVALID_TOKEN);
+            throw new JwtTokenInvalidException(ErrorBaseCode.INVALID_TOKEN);
         }
     }
 

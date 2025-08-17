@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 유효하지 않은 토큰으로 요청했을 때 발생
      */
     @ExceptionHandler(JwtTokenInvalidException.class)
-    public ResponseEntity<BaseResponse<?>> handleInvalidTokenException(final JwtTokenException e) {
+    public ResponseEntity<BaseResponse<?>> handleInvalidTokenException(final JwtTokenInvalidException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.INVALID_TOKEN);
     }
 
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 유효기간이 만료된 토큰으로 요청했을 때 발생
      */
     @ExceptionHandler(JwtTokenExpiredException.class)
-    public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenException e) {
+    public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenExpiredException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.EXPIRED_TOKEN);
     }
 
