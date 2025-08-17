@@ -11,8 +11,8 @@ assignees: ''
 <-- 진행할 작업에 대한 간단한 설명 -->
 
 ## ✅ 수행할 내용
-- [] TODO
-- [] TODO
-- [] TODO
+- [ ] TODO
+- [ ] TODO
+- [ ] TODO
 
 ## 💬 기타
