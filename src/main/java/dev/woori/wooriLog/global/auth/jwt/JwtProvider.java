@@ -13,21 +13,14 @@ public class JwtProvider {
     private final JwtGenerator jwtGenerator;
 
     /**
-     * accessToken 발급
+     * accessToken & refreshToken 발급
      * @param userId - memberId
-     * @return String accessToken
+     * @return Token - aT, rT
      */
-    public String issueAccessToken(final long userId) {
-        return jwtGenerator.generateAccessToken(userId);
-    }
-
-    /**
-     * refreshToken 발급
-     * @param userId - memberId
-     * @return String refreshToken
-     */
-    public String issueRefreshToken(final long userId) {
-        return jwtGenerator.generateRefreshToken(userId);
+    public Token issueToken(final long userId) {
+        String accessToken = jwtGenerator.generateAccessToken(userId);
+        String refreshToken = jwtGenerator.generateRefreshToken(userId);
+        return Token.of(accessToken, refreshToken);
     }
 
     /**
