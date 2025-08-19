@@ -1,6 +1,6 @@
 package dev.woori.wooriLog.global.auth.controller;
 
-import dev.woori.wooriLog.global.auth.dto.GoogleLoginReq;
+import dev.woori.wooriLog.global.auth.dto.*;
 import dev.woori.wooriLog.global.auth.service.GoogleOAuthService;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.BaseResponse;
@@ -19,5 +19,10 @@ public class AuthController {
     @PostMapping("/google/login")
     public ResponseEntity<BaseResponse<?>> googleLogin(@RequestBody GoogleLoginReq request) {
         return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.login(request));
+    }
+
+    @PostMapping("/google/enroll")
+    public ResponseEntity<BaseResponse<?>> googleEnroll(@RequestBody GoogleEnrollReq request) {
+        return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.enroll(request));
     }
 }

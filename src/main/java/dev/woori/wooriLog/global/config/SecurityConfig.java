@@ -23,7 +23,8 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
 
     private static final String[] whiteList = {
-            "/api/google/login"
+            "/api/google/login",
+            "/api/google/enroll"
     };
 
     @Bean

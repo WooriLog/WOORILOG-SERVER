@@ -1,5 +1,7 @@
 package dev.woori.wooriLog.domain.member.entity;
 
+import dev.woori.wooriLog.global.auth.dto.GoogleEnrollReq;
+import dev.woori.wooriLog.global.auth.dto.GoogleLoginReq;
 import dev.woori.wooriLog.global.auth.dto.GoogleUserInfoRes;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +26,8 @@ public class Member {
 
     private String socialId;
 
+    private String introduce;
+
     public static Member create(String email, String name, String provider, String socialId) {
         return Member.builder()
                 .email(email)
@@ -33,12 +37,13 @@ public class Member {
                 .build();
     }
 
-    public static Member create(GoogleUserInfoRes userInfo, String provider) {
+    public static Member create(GoogleUserInfoRes userInfo, GoogleEnrollReq req, String provider) {
         return Member.builder()
+                .name(req.name())
                 .email(userInfo.email())
-                .name(userInfo.name())
                 .provider(provider)
                 .socialId(userInfo.sub())
+                .introduce(req.introduce())
                 .build();
     }
 
