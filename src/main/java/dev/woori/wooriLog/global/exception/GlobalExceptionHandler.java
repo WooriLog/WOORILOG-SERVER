@@ -32,12 +32,12 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 401 - GoogleException
+     * 40101 - GoogleException
      * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
      */
     @ExceptionHandler(GoogleException.class)
     public ResponseEntity<BaseResponse<?>> handleGoogleException(final GoogleException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED, e.getMessage());
+        return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
     }
 
     /**
