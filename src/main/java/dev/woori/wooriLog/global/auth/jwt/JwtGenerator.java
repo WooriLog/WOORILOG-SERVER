@@ -77,10 +77,6 @@ public class JwtGenerator {
         return Keys.hmacShaKeyFor(jwtProperties.secret().getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
-    private String encodeSecretKeyToBase64() {
-        return Base64.getEncoder().encodeToString(jwtProperties.secret().getBytes());
-    }
-
     public Jws<Claims> parseToken(final String token) {
         try {
             final JwtParser jwtParser = getJwtParser();

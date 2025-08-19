@@ -32,10 +32,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
 
     private void handleException(HttpServletResponse response) throws IOException {
-        setResponse(response, HttpStatus.UNAUTHORIZED, ErrorBaseCode.UNAUTHORIZED);
+        setResponse(response, HttpStatus.UNAUTHORIZED);
     }
 
-    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, ErrorBaseCode failureCode) throws IOException {
+    private void setResponse(HttpServletResponse response, HttpStatus httpStatus) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(Constants.CHARACTER_TYPE);
         response.setStatus(httpStatus.value());

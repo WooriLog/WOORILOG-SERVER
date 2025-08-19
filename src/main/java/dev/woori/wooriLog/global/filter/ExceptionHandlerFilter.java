@@ -36,10 +36,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         setResponse(response, httpStatus, errorCode);
     }
 
-    private void handleException(HttpServletResponse response, Exception e) throws IOException {
-        setResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, ErrorBaseCode.BAD_REQUEST);
-    }
-
     private void setResponse(HttpServletResponse response, HttpStatus httpStatus, ErrorCode errorBaseCode) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(Constants.CHARACTER_TYPE);

@@ -1,7 +1,6 @@
 package dev.woori.wooriLog.domain.member.entity;
 
 import dev.woori.wooriLog.global.auth.dto.GoogleEnrollReq;
-import dev.woori.wooriLog.global.auth.dto.GoogleLoginReq;
 import dev.woori.wooriLog.global.auth.dto.GoogleUserInfoRes;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
