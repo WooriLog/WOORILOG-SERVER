@@ -32,6 +32,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 401 - GoogleException
+     * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
+     */
+    @ExceptionHandler(GoogleException.class)
+    public ResponseEntity<BaseResponse<?>> handleGoogleException(final GoogleException e) {
+        return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED, e.getMessage());
+    }
+
+    /**
      * 403 - ExpiredTokenException
      * 예외 내용 : 유효기간이 만료된 토큰으로 요청했을 때 발생
      */
