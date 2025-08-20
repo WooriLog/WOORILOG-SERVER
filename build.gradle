@@ -50,6 +50,10 @@ dependencyManagement {
     }
 }
 
+bootJar {
+    archiveBaseName.set("woorilog_server")   // 프로젝트 이름
+    archiveVersion.set("0.0.1-SNAPSHOT") // 버전
+}
 tasks.named('test') {
 	useJUnitPlatform()
 }
