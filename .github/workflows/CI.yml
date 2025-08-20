@@ -3,8 +3,6 @@ name: CI
 on:
   pull_request:
     branches: [ "main" ] 
-  push:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -33,8 +31,6 @@ jobs:
         # GitHub-Actions 에서 설정한 값을 application.yml 파일에 쓰기
         echo "${{ secrets.CI_APPLICATION }}" >> ./application.yml
         
-        # application.yml 파일 확인
-        cat ./application.yml
       shell: bash
       
     - name: build
