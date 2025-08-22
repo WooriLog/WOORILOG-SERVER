@@ -29,6 +29,7 @@
         public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
             return httpSecurity
                     .csrf(AbstractHttpConfigurer::disable)
+                    .cors(AbstractHttpConfigurer::disable)
                     .formLogin(AbstractHttpConfigurer::disable)
                     .httpBasic(AbstractHttpConfigurer::disable)
                     .sessionManagement(sessionManagementConfigurer ->
@@ -37,26 +38,12 @@
                     .exceptionHandling(
                             exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트 허용
-                            .requestMatchers("/api/google/login", "/api/google/enroll").permitAll()        // 공개 API는 permitAll
+                            .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                            .requestMatchers("/api/google/login", "/api/google/enroll").permitAll()
                             .anyRequest().authenticated()
                     )
                     .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .build();
-        }
-
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-            var cfg = new org.springframework.web.cors.CorsConfiguration();
-            cfg.addAllowedOriginPattern("*");
-            cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-            cfg.setAllowedHeaders(List.of("*"));
-            cfg.setAllowCredentials(true);
-            cfg.setMaxAge(3600L);
-
-            var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", cfg);
-            return source;
         }
     }
