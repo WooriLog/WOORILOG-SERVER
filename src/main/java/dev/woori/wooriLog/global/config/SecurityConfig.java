@@ -47,7 +47,7 @@
                             authorizationManagerRequestMatcherRegistry
                                     .anyRequest()
                                     .authenticated())
-                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                    .cors(AbstractHttpConfigurer::disable)
                     .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .build();
@@ -55,18 +55,5 @@
         @Bean
         public WebSecurityCustomizer webSecurityCustomizer() {
             return web -> web.ignoring().requestMatchers(whiteList);
-        }
-
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 허용할 origin
-            configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            configuration.setAllowedHeaders(List.of("*"));
-            configuration.setAllowCredentials(true); // 쿠키/인증정보 포함 허용
-
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", configuration);
-            return source;
         }
     }
