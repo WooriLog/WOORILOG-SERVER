@@ -9,14 +9,11 @@
     import org.springframework.context.annotation.Configuration;
     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
     import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-    import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
     import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
     import org.springframework.security.config.http.SessionCreationPolicy;
     import org.springframework.security.web.SecurityFilterChain;
     import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-    import org.springframework.web.cors.CorsConfiguration;
     import org.springframework.web.cors.CorsConfigurationSource;
-    import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
     import java.util.List;
 
@@ -27,10 +24,6 @@
         private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
         private final JwtProvider jwtProvider;
 
-        private static final String[] whiteList = {
-                "/api/google/login",
-                "/api/google/enroll"
-        };
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -43,17 +36,27 @@
                                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .exceptionHandling(
                             exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                    .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                            authorizationManagerRequestMatcherRegistry
-                                    .anyRequest()
-                                    .authenticated())
-                    .cors(AbstractHttpConfigurer::disable)
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // 프리플라이트 허용
+                            .requestMatchers("/api/google/login", "/api/google/enroll").permitAll()        // 공개 API는 permitAll
+                            .anyRequest().authenticated()
+                    )
                     .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .build();
         }
+
         @Bean
-        public WebSecurityCustomizer webSecurityCustomizer() {
-            return web -> web.ignoring().requestMatchers(whiteList);
+        public CorsConfigurationSource corsConfigurationSource() {
+            var cfg = new org.springframework.web.cors.CorsConfiguration();
+            cfg.addAllowedOriginPattern("*");
+            cfg.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+            cfg.setAllowedHeaders(java.util.List.of("*"));
+            cfg.setAllowCredentials(true);
+            cfg.setMaxAge(3600L);
+
+            var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", cfg);
+            return source;
         }
     }
