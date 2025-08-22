@@ -26,6 +26,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
         private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
         private final JwtProvider jwtProvider;
 
+        private static final List<String> whiteList = List.of(
+                "/api/google/login",
+                "/api/google/enroll"
+        );
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -41,10 +45,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
                             exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers("/api/google/login", "/api/google/enroll").permitAll()
+                            .requestMatchers(whiteList.toArray(new String[0])).permitAll()
                             .anyRequest().authenticated()
                     )
-                    .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, whiteList), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .build();
         }
