@@ -28,13 +28,8 @@ import static dev.woori.wooriLog.global.auth.jwt.TokenAuthentication.createToken
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final List<String> whiteList;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
-
-    // 공개(permitAll) 엔드포인트: 여기서는 필터 자체를 스킵
-    private static final List<String> PUBLIC_PATHS = List.of(
-            "/api/google/login",
-            "/api/google/enroll"
-    );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -44,12 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String uri = request.getRequestURI();
-        for (String pattern : PUBLIC_PATHS) {
-            if (pathMatcher.match(pattern, uri)) {
-                return true;
-            }
-        }
-        return false;
+        return whiteList.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 
     @Override
