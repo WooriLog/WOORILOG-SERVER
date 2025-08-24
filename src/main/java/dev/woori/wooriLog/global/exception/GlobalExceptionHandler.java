@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<BaseResponse<?>> handleException(IllegalArgumentException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getCause().getMessage());
+        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
     }
 
     /**
