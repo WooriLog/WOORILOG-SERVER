@@ -86,7 +86,7 @@ public class JwtGenerator {
             throw new JwtTokenExpiredException(ErrorBaseCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException | MalformedJwtException | SecurityException | IllegalArgumentException e) {
             //잘못된 jwt 예외처리
-            throw new JwtTokenInvalidException(ErrorBaseCode.INVALID_TOKEN);
+            throw new JwtTokenInvalidException(ErrorBaseCode.UNAUTHORIZED);
         }
     }
 

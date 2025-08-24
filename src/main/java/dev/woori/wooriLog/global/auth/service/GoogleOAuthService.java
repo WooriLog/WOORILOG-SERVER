@@ -7,7 +7,7 @@ import dev.woori.wooriLog.global.auth.dto.*;
 import dev.woori.wooriLog.global.auth.feign.FeignProvider;
 import dev.woori.wooriLog.global.auth.jwt.JwtProvider;
 import dev.woori.wooriLog.global.auth.jwt.Token;
-import dev.woori.wooriLog.global.exception.GoogleException;
+import dev.woori.wooriLog.global.exception.UnRolledException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class GoogleOAuthService {
 
         // Member 조회 or 생성
         Member member = memberRepository.findByProviderAndSocialId(Constants.GOOGLE, userInfo.sub()) // 소셜 ID를 통한 유저 조회
-                .orElseThrow(() -> new GoogleException(googleToken.access_token()));
+                .orElseThrow(() -> new UnRolledException(googleToken.access_token()));
 
         // JWT Token 발급
         Token token = jwtProvider.issueToken(member.getId());
