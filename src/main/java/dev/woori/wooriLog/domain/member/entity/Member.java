@@ -2,6 +2,7 @@ package dev.woori.wooriLog.domain.member.entity;
 
 import dev.woori.wooriLog.global.auth.dto.GoogleEnrollReq;
 import dev.woori.wooriLog.global.auth.dto.GoogleUserInfoRes;
+import dev.woori.wooriLog.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,7 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
