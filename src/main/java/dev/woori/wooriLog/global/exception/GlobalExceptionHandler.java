@@ -20,6 +20,11 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CustomBaseException.class)
+    public ResponseEntity<BaseResponse<?>> handleCustomBase(CustomBaseException e) {
+        return ApiResponseUtil.failure(e.getErrorCode()); // 409/메시지 등 ErrorCode 기반으로 응답
+    }
+
     /**
      * 400 - MissingServletRequestParameterException
      * 예외 내용 : 필수 파라미터가 존재하지 않음
