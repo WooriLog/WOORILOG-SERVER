@@ -109,11 +109,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 40101 - UnRolledException
+     * 40101 - UnEnrolledException
      * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
      */
-    @ExceptionHandler(UnRolledException.class)
-    public ResponseEntity<BaseResponse<?>> handleGoogleException(final UnRolledException e) {
+    @ExceptionHandler(UnEnrolledException.class)
+    public ResponseEntity<BaseResponse<?>> handleUnEnrolledException(final UnEnrolledException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
     }
 
