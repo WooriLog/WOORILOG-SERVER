@@ -8,6 +8,8 @@ import dev.woori.wooriLog.global.auth.feign.FeignProvider;
 import dev.woori.wooriLog.global.auth.jwt.JwtProvider;
 import dev.woori.wooriLog.global.auth.jwt.Token;
 import dev.woori.wooriLog.global.exception.UnRolledException;
+import dev.woori.wooriLog.global.exception.WooriLogUseException;
+import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +54,7 @@ public class GoogleOAuthService {
     public LoginSuccessRes enroll(GoogleEnrollReq request) {
 
         GoogleUserInfoRes userInfo = getUserInfo(request.googleToken());
+        isEnrolled(userInfo.email());
         Member member = memberRepository.save(Member.create(userInfo, request, Constants.GOOGLE));
 
         // JWT Token 발급
@@ -66,5 +69,11 @@ public class GoogleOAuthService {
      */
     private GoogleUserInfoRes getUserInfo(String accessToken) {
         return feignProvider.getUserInfo(Constants.BEARER + accessToken);
+    }
+
+    private void isEnrolled(String email) {
+        if (memberRepository.existsMemberByEmail(email)) {
+            throw new WooriLogUseException(ErrorBaseCode.CONFLICT);
+        }
     }
 }
