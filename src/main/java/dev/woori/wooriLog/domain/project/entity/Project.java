@@ -22,21 +22,19 @@ public class Project extends BaseEntity {
 
     private String introduce;
 
-    @Column(name = "readme")
+    @Column(name = "read_me")
     private String readMe;
 
     @ElementCollection
     @CollectionTable(name = "tech_stack", joinColumns = @JoinColumn(name = "project_id"))
     private List<String> techStack;
 
-    private Project(String projectName, String introduce, String readMe, List<String> techStack) {
-        this.projectName = projectName;
-        this.introduce = introduce;
-        this.readMe = readMe;
-        this.techStack = techStack;
-    }
-
     public static Project create(String projectName, String introduce, String readMe, List<String> techStack) {
-        return new Project(projectName, introduce, readMe, techStack);
+        return Project.builder()
+                .projectName(projectName)
+                .introduce(introduce)
+                .readMe(readMe)
+                .techStack(techStack)
+                .build();
     }
 }

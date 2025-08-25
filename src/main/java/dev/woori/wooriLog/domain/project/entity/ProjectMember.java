@@ -2,17 +2,19 @@ package dev.woori.wooriLog.domain.project.entity;
 
 import dev.woori.wooriLog.domain.member.entity.Member;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "PROJECT_MEMBER")
-@RequiredArgsConstructor
+@Table(name = "project_member")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectMember {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PROJECT_MEMBER_ID")
+    @Column(name = "project_member_id")
     private Long id;
 
     @ManyToOne
