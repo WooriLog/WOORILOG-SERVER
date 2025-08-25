@@ -1,4 +1,4 @@
-package dev.woori.wooriLog.domain.member.blog.dto;
+package dev.woori.wooriLog.domain.blog.dto;
 
 import lombok.Builder;
 

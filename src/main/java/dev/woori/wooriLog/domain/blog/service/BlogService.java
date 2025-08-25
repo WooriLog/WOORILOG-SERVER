@@ -1,9 +1,9 @@
-package dev.woori.wooriLog.domain.member.blog.service;
+package dev.woori.wooriLog.domain.blog.service;
 
 
-import dev.woori.wooriLog.domain.member.blog.dto.*;
-import dev.woori.wooriLog.domain.member.entity.Blog;
-import dev.woori.wooriLog.domain.member.blog.repository.BlogRepository;
+import dev.woori.wooriLog.domain.blog.dto.*;
+import dev.woori.wooriLog.domain.blog.entity.Blog;
+import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
 import dev.woori.wooriLog.domain.project.entity.Project;

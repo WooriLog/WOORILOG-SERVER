@@ -1,4 +1,4 @@
-package dev.woori.wooriLog.domain.member.blog.entity;
+package dev.woori.wooriLog.domain.blog.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

@@ -1,7 +1,8 @@
-package dev.woori.wooriLog.domain.member.entity;
+package dev.woori.wooriLog.domain.blog.entity;
 
-import dev.woori.wooriLog.domain.member.blog.dto.BlogCreateReq;
-import dev.woori.wooriLog.domain.member.blog.entity.Category;
+import dev.woori.wooriLog.domain.blog.dto.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.enums.Category;
+import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.global.common.BaseEntity;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
-package dev.woori.wooriLog.domain.member.blog.dto;
+package dev.woori.wooriLog.domain.blog.dto;
 
-import dev.woori.wooriLog.domain.member.blog.entity.Category;
+import dev.woori.wooriLog.domain.blog.enums.Category;
 import lombok.Builder;
 
 import java.util.List;
