@@ -52,12 +52,13 @@ jobs:
           VERSION=0.${{ github.run_number }}
           echo "Using VERSION=$VERSION"
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:$VERSION .
-
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:latest .
       # 7. Docker Hub에 푸시
       - name: Docker Image 푸쉬
         run: |
           VERSION=0.${{ github.run_number }}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:$VERSION
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:latest
 
   CD:
     needs: CI
@@ -75,5 +76,4 @@ jobs:
             DOCKER_USER='${{ secrets.DOCKERHUB_USERNAME }}' \
             DOCKER_PW='${{ secrets.DOCKERHUB_PASSWORD }}' \
             IMAGE_NAME='${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server' \
-            IMAGE_TAG='0.${{ github.run_number }}' \
             bash ~/deploy.sh
