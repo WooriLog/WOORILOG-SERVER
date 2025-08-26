@@ -49,14 +49,15 @@ public class BlogService {
      * @param postId 열람할 글 id
      * @return BlogInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
+    @Transactional
     public BlogInfoRes createBlogInfoRes(Long postId) {
         Blog blog = blogRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         Project project = blog.getProject();
         Member member = blog.getMember();
         return BlogInfoRes.create(
-                BlogPostDTO.create(blog),
+                BlogPostDto.create(blog),
                 createBlogProjectDTO(project),
-                BlogMemberDTO.create(member)
+                BlogMemberDto.create(member)
         );
     }
 
@@ -64,14 +65,14 @@ public class BlogService {
      * 열람할 글을 작성한 프로젝트에 대한 DTO를 생성해 리턴합니다.
      *
      * @param project 열람할 글을 작성한 프로젝트의 엔티티
-     * @return BlogProjectDTO: 열람할 글을 작성한 프로젝트의 DTO
+     * @return BlogProjectDto: 열람할 글을 작성한 프로젝트의 DTO
      */
-    private BlogProjectDTO createBlogProjectDTO(Project project) {
+    private BlogProjectDto createBlogProjectDTO(Project project) {
         List<ProjectMember> projectMember = projectMemberRepository.findByProject(project);
 
-        List<BlogMemberDTO> memberList = projectMember.stream().map(pm -> BlogMemberDTO.create(pm.getMember())).toList();
+        List<BlogMemberDto> memberList = projectMember.stream().map(pm -> BlogMemberDto.create(pm.getMember())).toList();
 
-        return BlogProjectDTO.create(
+        return BlogProjectDto.create(
                 project.getProjectName(),
                 project.getIntroduce(),
                 memberList

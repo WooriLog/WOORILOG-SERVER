@@ -5,17 +5,17 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record BlogProjectDTO(
+public record BlogProjectDto(
         String name,
         String summary,
-        List<BlogMemberDTO> member
+        List<BlogMemberDto> member
 ) {
-    public static BlogProjectDTO create(
+    public static BlogProjectDto create(
             String name,
             String summary,
-            List<BlogMemberDTO> member
+            List<BlogMemberDto> member
     ) {
-        return BlogProjectDTO.builder()
+        return BlogProjectDto.builder()
                 .name(name)
                 .summary(summary)
                 .member(member)

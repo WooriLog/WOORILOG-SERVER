@@ -4,14 +4,14 @@ import lombok.Builder;
 
 @Builder
 public record BlogInfoRes(
-        BlogPostDTO post,
-        BlogProjectDTO project,
-        BlogMemberDTO author
+        BlogPostDto post,
+        BlogProjectDto project,
+        BlogMemberDto author
 ) {
     public static BlogInfoRes create(
-            BlogPostDTO post,
-            BlogProjectDTO project,
-            BlogMemberDTO author
+            BlogPostDto post,
+            BlogProjectDto project,
+            BlogMemberDto author
     ) {
         return BlogInfoRes.builder()
                 .post(post)

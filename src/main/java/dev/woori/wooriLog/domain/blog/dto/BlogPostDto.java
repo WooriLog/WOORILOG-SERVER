@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
-public record BlogPostDTO(
+public record BlogPostDto(
         String title,
         List<String> tags,
         Category category,
@@ -16,10 +16,10 @@ public record BlogPostDTO(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static BlogPostDTO create(
+    public static BlogPostDto create(
             Blog blog
     ) {
-        return BlogPostDTO.builder()
+        return BlogPostDto.builder()
                 .title(blog.getTitle())
                 .tags(blog.getTags())
                 .category(blog.getCategory())
