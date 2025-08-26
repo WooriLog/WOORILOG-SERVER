@@ -1,5 +1,6 @@
 package dev.woori.wooriLog.domain.blog.dto;
 
+import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import lombok.Builder;
 
@@ -16,20 +17,15 @@ public record BlogPostDTO(
         LocalDateTime updatedAt
 ) {
     public static BlogPostDTO create(
-            String title,
-            List<String> tags,
-            Category category,
-            String document,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
+            Blog blog
     ) {
         return BlogPostDTO.builder()
-                .title(title)
-                .tags(tags)
-                .category(category)
-                .document(document)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
+                .title(blog.getTitle())
+                .tags(blog.getTags())
+                .category(blog.getCategory())
+                .document(blog.getDocument())
+                .createdAt(blog.getCreatedAt())
+                .updatedAt(blog.getUpdatedAt())
                 .build();
     }
 }

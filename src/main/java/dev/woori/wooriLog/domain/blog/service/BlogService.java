@@ -54,13 +54,7 @@ public class BlogService {
         Project project = blog.getProject();
         Member member = blog.getMember();
         return BlogInfoRes.create(
-                BlogPostDTO.create(
-                        blog.getTitle(),
-                        blog.getTags(),
-                        blog.getCategory(),
-                        blog.getDocument(),
-                        blog.getCreatedAt(),
-                        blog.getUpdatedAt()),
+                BlogPostDTO.create(blog),
                 createBlogProjectDTO(project),
                 BlogMemberDTO.create(member)
         );

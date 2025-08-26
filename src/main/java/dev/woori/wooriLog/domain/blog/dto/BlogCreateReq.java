@@ -12,17 +12,4 @@ public record BlogCreateReq(
         Category category,
         List<String> tags
 ) {
-    public BlogCreateReq create(
-            String document,
-            String title,
-            Category category,
-            List<String> tags
-    ) {
-        return BlogCreateReq.builder()
-                .document(document)
-                .title(title)
-                .category(category)
-                .tags(tags)
-                .build();
-    }
 }
