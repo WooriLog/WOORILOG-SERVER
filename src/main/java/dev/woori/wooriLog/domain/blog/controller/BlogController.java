@@ -1,8 +1,8 @@
-package dev.woori.wooriLog.domain.member.blog.controller;
+package dev.woori.wooriLog.domain.blog.controller;
 
-import dev.woori.wooriLog.domain.member.blog.dto.BlogCreateReq;
-import dev.woori.wooriLog.domain.member.blog.dto.BlogInfoRes;
-import dev.woori.wooriLog.domain.member.blog.service.BlogService;
+import dev.woori.wooriLog.domain.blog.dto.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.BlogInfoRes;
+import dev.woori.wooriLog.domain.blog.service.BlogService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.BaseResponse;
