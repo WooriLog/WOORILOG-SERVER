@@ -54,27 +54,15 @@ public class BlogService {
         Project project = blog.getProject();
         Member member = blog.getMember();
         return BlogInfoRes.create(
-                createPostDTO(blog),
+                BlogPostDTO.create(
+                        blog.getTitle(),
+                        blog.getTags(),
+                        blog.getCategory(),
+                        blog.getDocument(),
+                        blog.getCreatedAt(),
+                        blog.getUpdatedAt()),
                 createBlogProjectDTO(project),
-                createMemberDTO(member)
-        );
-    }
-
-    /**
-     * 열람할 글의 DTO를 생성해 리턴합니다.
-     *
-     * @param blog 열람할 글의 엔티티
-     * @return BlogPostDTO: 열람할 글의 정보
-     */
-    @Transactional
-    public BlogPostDTO createPostDTO(Blog blog) {
-        return BlogPostDTO.create(
-                blog.getTitle(),
-                blog.getTags(),
-                blog.getCategory(),
-                blog.getDocument(),
-                blog.getCreatedAt(),
-                blog.getUpdatedAt()
+                BlogMemberDTO.create(member)
         );
     }
 
@@ -84,27 +72,15 @@ public class BlogService {
      * @param project 열람할 글을 작성한 프로젝트의 엔티티
      * @return BlogProjectDTO: 열람할 글을 작성한 프로젝트의 DTO
      */
-    @Transactional
-    public BlogProjectDTO createBlogProjectDTO(Project project) {
+    private BlogProjectDTO createBlogProjectDTO(Project project) {
         List<ProjectMember> projectMember = projectMemberRepository.findByProject(project);
 
-        List<BlogMemberDTO> Memberlist = projectMember.stream().map(pm -> BlogMemberDTO.create(pm.getMember())).toList();
+        List<BlogMemberDTO> memberList = projectMember.stream().map(pm -> BlogMemberDTO.create(pm.getMember())).toList();
 
         return BlogProjectDTO.create(
                 project.getProjectName(),
                 project.getIntroduce(),
-                Memberlist
+                memberList
         );
-    }
-
-    /**
-     * 열람할 글을 작성한 작성자의 DTO를 생성해 리턴합니다.
-     *
-     * @param member 열람할 글을 작성한 작성자의 엔티티
-     * @return BlogMemberDTO: 열람할 글을 작성한 작성자의 DTO
-     */
-    @Transactional
-    public BlogMemberDTO createMemberDTO(Member member) {
-        return BlogMemberDTO.create(member);
     }
 }
