@@ -19,11 +19,10 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    @PostMapping("/blog/{projectId}/{userId}")
+    @PostMapping("/blog/{projectId}")
     public ResponseEntity<BaseResponse<?>> blogCreate(
             @PathVariable("projectId") Long projectId,
-            @PathVariable("userId") Long userId,
-            //@UserId Long userId,
+            @UserId Long userId,
             @RequestBody BlogCreateReq request
     ) {
         blogService.createBlog(projectId, userId, request);
