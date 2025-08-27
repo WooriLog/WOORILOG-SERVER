@@ -4,6 +4,7 @@ package dev.woori.wooriLog.domain.blog.service;
 import dev.woori.wooriLog.domain.blog.dto.*;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
+import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
 import dev.woori.wooriLog.domain.project.entity.Project;
@@ -47,17 +48,17 @@ public class BlogService {
      * 하위 DTO를 생성하고 조립한 응답을 생성해 리턴합니다.
      * 
      * @param postId 열람할 글 id
-     * @return BlogInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
+     * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogInfoRes createBlogInfoRes(Long postId) {
+    public BlogDetailInfoRes createBlogInfoRes(Long postId) {
         Blog blog = blogRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         Project project = blog.getProject();
         Member member = blog.getMember();
-        return BlogInfoRes.create(
+        return BlogDetailInfoRes.create(
                 BlogPostDto.create(blog),
                 createBlogProjectDTO(project),
-                BlogMemberDto.create(member)
+                MemberInfoDto.create(member)
         );
     }
 
@@ -70,11 +71,11 @@ public class BlogService {
     private BlogProjectDto createBlogProjectDTO(Project project) {
         List<ProjectMember> projectMember = projectMemberRepository.findByProject(project);
 
-        List<BlogMemberDto> memberList = projectMember.stream().map(pm -> BlogMemberDto.create(pm.getMember())).toList();
+        List<MemberInfoDto> memberList = projectMember.stream().map(pm -> MemberInfoDto.create(pm.getMember())).toList();
 
         return BlogProjectDto.create(
                 project.getProjectName(),
-                project.getIntroduce(),
+                project.getSummary(),
                 memberList
         );
     }
