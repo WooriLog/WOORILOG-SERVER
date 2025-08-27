@@ -1,5 +1,6 @@
 package dev.woori.wooriLog.domain.project.entity;
 
+import dev.woori.wooriLog.domain.project.dto.ProjectCreateReq;
 import dev.woori.wooriLog.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,8 @@ public class Project extends BaseEntity {
     @Column(name = "project_name")
     private String projectName;
 
-    private String introduce;
+    @Column(length = 2048)
+    private String summary;
 
     @Column(name = "read_me")
     private String readMe;
@@ -29,12 +31,19 @@ public class Project extends BaseEntity {
     @CollectionTable(name = "tech_stack", joinColumns = @JoinColumn(name = "project_id"))
     private List<String> techStack;
 
-    public static Project create(String projectName, String introduce, String readMe, List<String> techStack) {
+    public static Project create(String projectName, String summary, String readMe, List<String> techStack) {
         return Project.builder()
                 .projectName(projectName)
-                .introduce(introduce)
+                .summary(summary)
                 .readMe(readMe)
                 .techStack(techStack)
+                .build();
+    }
+
+    public static Project create(ProjectCreateReq request) {
+        return Project.builder()
+                .projectName(request.name())
+                .summary(request.summary())
                 .build();
     }
 }
