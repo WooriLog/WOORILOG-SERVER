@@ -23,6 +23,7 @@ public enum ErrorBaseCode implements ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, 401, "토큰이 만료되었습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 401, "인증되지 않은 사용자입니다."),
     UNENROLLED(HttpStatus.UNAUTHORIZED, 40101, "가입되지 않은 사용자입니다."),
+    INVALID_GOOGLE_AUTHCODE(HttpStatus.UNAUTHORIZED, 401, "유효하지 않은 인증코드입니다."),
     INVALID_GOOGLE_TOKEN(HttpStatus.UNAUTHORIZED, 401, "유효하지 않은 토큰입니다."),
 
     /**
