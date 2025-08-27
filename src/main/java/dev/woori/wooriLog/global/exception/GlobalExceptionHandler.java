@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 잘못된 인자값 전달로 인한 오류
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<BaseResponse<?>> handleException(final IllegalArgumentException e) {
+    public ResponseEntity<BaseResponse<?>> handleIllegalArgumentException(final IllegalArgumentException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
     }
 
