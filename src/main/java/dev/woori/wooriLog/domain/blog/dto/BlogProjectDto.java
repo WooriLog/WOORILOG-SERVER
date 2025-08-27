@@ -1,5 +1,6 @@
 package dev.woori.wooriLog.domain.blog.dto;
 
+import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import lombok.Builder;
 
 import java.util.List;
@@ -8,12 +9,12 @@ import java.util.List;
 public record BlogProjectDto(
         String name,
         String summary,
-        List<BlogMemberDto> member
+        List<MemberInfoDto> member
 ) {
     public static BlogProjectDto create(
             String name,
             String summary,
-            List<BlogMemberDto> member
+            List<MemberInfoDto> member
     ) {
         return BlogProjectDto.builder()
                 .name(name)

@@ -1,7 +1,7 @@
 package dev.woori.wooriLog.domain.blog.controller;
 
 import dev.woori.wooriLog.domain.blog.dto.BlogCreateReq;
-import dev.woori.wooriLog.domain.blog.dto.BlogInfoRes;
+import dev.woori.wooriLog.domain.blog.dto.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.service.BlogService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
@@ -33,7 +33,7 @@ public class BlogController {
     public ResponseEntity<BaseResponse<?>> blogCreate(
             @PathVariable("postId") Long postId
     ) {
-        BlogInfoRes res = blogService.createBlogInfoRes(postId);
+        BlogDetailInfoRes res = blogService.createBlogInfoRes(postId);
         return ResponseEntity.ok(BaseResponse.of(SuccessCode.OK, res));
     }
 }
