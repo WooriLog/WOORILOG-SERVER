@@ -16,7 +16,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @PostMapping("/project")
+    @PostMapping("/projects")
     public ResponseEntity<?> createProject(
             @UserId Long leaderId,
             @RequestBody ProjectCreateReq request
@@ -25,7 +25,7 @@ public class ProjectController {
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/projects/{projectId}")
     public ResponseEntity<?> getProjectInfo(@PathVariable Long projectId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectInfo(projectId));
     }

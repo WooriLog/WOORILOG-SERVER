@@ -21,7 +21,6 @@ public class MemberService {
      * @param email 찾고자 하는 유저의 부분 email 문자열
      * @return List<MemberInfoDto> 해당하는 회원들의 정보를 담은 DTO
      */
-    @Transactional
     public List<MemberInfoDto> findMembersByEmail(String email) {
         List<Member> members = memberRepository.findAllByEmailContaining(email);
         return members.stream().map(MemberInfoDto::create).toList();
