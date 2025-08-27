@@ -21,8 +21,13 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomBaseException.class)
-    public ResponseEntity<BaseResponse<?>> handleCustomBase(CustomBaseException e) {
+    public ResponseEntity<BaseResponse<?>> handleCustomBaseException(final CustomBaseException e) {
         return ApiResponseUtil.failure(e.getErrorCode()); // 409/메시지 등 ErrorCode 기반으로 응답
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<BaseResponse<?>> handleCustomException(final CustomException e) {
+        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
     }
 
     /**
@@ -59,7 +64,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 잘못된 인자값 전달로 인한 오류
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<BaseResponse<?>> handleException(IllegalArgumentException e) {
+    public ResponseEntity<BaseResponse<?>> handleException(final IllegalArgumentException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
     }
 

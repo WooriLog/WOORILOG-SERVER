@@ -1,16 +1,19 @@
 package dev.woori.wooriLog.global.response.error;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.woori.wooriLog.global.exception.CustomException;
 import dev.woori.wooriLog.global.exception.FeignException;
 import feign.Response;
 import feign.Util;
 import feign.codec.ErrorDecoder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 public class GoogleErrorDecoder implements ErrorDecoder {
 
@@ -37,22 +40,26 @@ public class GoogleErrorDecoder implements ErrorDecoder {
             // 400 - 토큰 교환: 잘못된 code/code_verifier 등
             if (methodKey.contains("GoogleTokenFeign#exchangeToken")) {
                 if ("invalid_grant".equals(code) || "invalid_request".equals(code)) {
-                    return new FeignException(ErrorBaseCode.INVALID_GOOGLE_CODE);
+                    log.warn("GoogleTokenFeign - Invalid code || code_verifier");
+                    return new FeignException(ErrorBaseCode.INVALID_GOOGLE_AUTHCODE);
                 }
             }
 
             // 403 - 유저정보 API: 토큰 문제
             if (methodKey.contains("GoogleUserinfoFeign#getUser")) {
                 if ("invalid_token".equals(code)) {
+                    log.warn("GoogleUserInfoFeign - Invalid Token");
                     return new FeignException(ErrorBaseCode.INVALID_GOOGLE_TOKEN);
                 }
             }
             // 400 - 그 외 문제들
-            return new FeignException(ErrorBaseCode.BAD_REQUEST);
+            log.warn("GoogleFeign - Other Error");
+            return new CustomException(payload.error);
         }
 
         // 500 : 서버 내부 에러
         if (status >= 500) {
+            log.warn("FeignException - Server Error");
             return new FeignException(
                     ErrorBaseCode.INTERNAL_SERVER_ERROR
             );
