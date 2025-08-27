@@ -83,6 +83,7 @@ jobs:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
+          envs: DOCKER_USER,DOCKER_PW,IMAGE_NAME,IMAGE_TAG
           script: |
             export DOCKER_USER="${DOCKER_USER}"
             export DOCKER_PW="${DOCKER_PW}"
