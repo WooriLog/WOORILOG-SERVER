@@ -17,8 +17,10 @@ public class AuthController {
     private final GoogleOAuthService googleOAuthService;
 
     @PostMapping("/google/login")
-    public ResponseEntity<BaseResponse<?>> googleLogin(@RequestBody GoogleLoginReq request) {
-        return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.login(request));
+    public ResponseEntity<BaseResponse<?>> googleLogin(@RequestHeader(name = "Authorization") String authorizationCode) {
+        authorizationCode = authorizationCode.startsWith("Bearer ") ?
+                authorizationCode.replaceFirst("Bearer ", "") : authorizationCode;
+        return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.login(authorizationCode));
     }
 
     @PostMapping("/google/enroll")
