@@ -22,7 +22,9 @@ public class AuthController {
     }
 
     @PostMapping("/google/enroll")
-    public ResponseEntity<BaseResponse<?>> googleEnroll(@RequestHeader(name = "Authorization") final String googleToken ,@RequestBody GoogleEnrollReq request) {
+    public ResponseEntity<BaseResponse<?>> googleEnroll(@RequestHeader(name = "Authorization") String googleToken ,@RequestBody GoogleEnrollReq request) {
+        googleToken = googleToken.startsWith("Bearer ") ?
+                googleToken.replaceFirst("Bearer ", "") : googleToken;
         return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.enroll(googleToken, request));
     }
 }
