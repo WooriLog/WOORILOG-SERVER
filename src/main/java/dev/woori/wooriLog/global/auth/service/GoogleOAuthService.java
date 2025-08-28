@@ -51,9 +51,9 @@ public class GoogleOAuthService {
      * @return LoginSuccessRes
      */
     @Transactional
-    public LoginSuccessRes enroll(GoogleEnrollReq request) {
+    public LoginSuccessRes enroll(final String accessToken, GoogleEnrollReq request) {
 
-        GoogleUserInfoRes userInfo = getUserInfo(request.googleToken());
+        GoogleUserInfoRes userInfo = getUserInfo(accessToken);
         isEnrolled(userInfo.email());
         Member member = memberRepository.save(Member.create(userInfo, request, Constants.GOOGLE));
 

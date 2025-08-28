@@ -57,7 +57,7 @@ public class ProjectService {
     /**
      * 프로젝트 정보 조회 메서드
      * @param projectId 프로젝트 Id
-     * @return 프로젝트 정보(기본 정보, 멤버 정보, 포스팅 정보) DTO
+     * @return ProjectInfoRes
      */
     @Transactional
     public ProjectInfoRes getProjectInfo(Long projectId) {
@@ -78,6 +78,20 @@ public class ProjectService {
                 blogInfos,
                 memberInfos
         );
+    }
+
+    /**
+     * 유저가 속한 프로젝트들을 리스트로 반환
+     * @param memberId 유저 ID
+     * @return List<ProjectInfoDto>
+     */
+    public List<ProjectInfoDto> getProjectListByMemberId(Long memberId) {
+        Member member = findMemberBy(memberId);
+        List<Project> projectList = projectMemberRepository.findProjectsByMember(member);
+
+        return projectList.stream()
+                .map(ProjectInfoDto::create)
+                .toList();
     }
 
     private void addLeaderToProject(Long leaderId, Project project) {
