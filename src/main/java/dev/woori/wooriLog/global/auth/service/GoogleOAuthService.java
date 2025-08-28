@@ -25,14 +25,14 @@ public class GoogleOAuthService {
 
     /**
      * 로그인 로직
-     * @param authorizationCode 인증 코드
+     * @param request 인증 코드가 담긴 요청 DTO
      * @return LoginSuccessRes - 로그인 성공 응답 DTO
      */
     @Transactional
-    public LoginSuccessRes login(String authorizationCode) {
+    public LoginSuccessRes login(GoogleLoginReq request) {
 
         // Google API & OAuth
-        GoogleTokenRes googleToken = feignProvider.getGoogleToken(authorizationCode);
+        GoogleTokenRes googleToken = feignProvider.getGoogleToken(request.authorizationCode());
         GoogleUserInfoRes userInfo = getUserInfo(googleToken.access_token());
 
         // Member 조회 or 생성
