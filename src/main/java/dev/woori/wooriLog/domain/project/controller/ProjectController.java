@@ -29,4 +29,9 @@ public class ProjectController {
     public ResponseEntity<?> getProjectInfo(@PathVariable Long projectId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectInfo(projectId));
     }
+
+    @GetMapping("/projects/list")
+    public ResponseEntity<?> getProjectList(@UserId Long memberId) {
+        return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectListBy(memberId));
+    }
 }

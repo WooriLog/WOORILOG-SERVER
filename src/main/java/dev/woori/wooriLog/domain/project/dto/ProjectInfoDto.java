@@ -7,6 +7,7 @@ import java.util.List;
 
 @Builder
 public record ProjectInfoDto(
+        Long projectId,
         String projectName,
         String summary,
         String readme,
@@ -14,6 +15,7 @@ public record ProjectInfoDto(
 ) {
     public static ProjectInfoDto create(Project project) {
         return ProjectInfoDto.builder()
+                .projectId(project.getId())
                 .projectName(project.getProjectName())
                 .summary(project.getSummary())
                 .readme(project.getReadMe())
