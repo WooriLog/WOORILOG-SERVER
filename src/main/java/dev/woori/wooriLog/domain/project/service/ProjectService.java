@@ -85,9 +85,9 @@ public class ProjectService {
      * @param memberId 유저 ID
      * @return List<ProjectInfoDto>
      */
-    public List<ProjectInfoDto> getProjectListBy(Long memberId) {
+    public List<ProjectInfoDto> getProjectListByMemberId(Long memberId) {
         Member member = findMemberBy(memberId);
-        List<Project> projectList = projectMemberRepository.findProjectsByUser(member);
+        List<Project> projectList = projectMemberRepository.findProjectsByMember(member);
 
         return projectList.stream()
                 .map(ProjectInfoDto::create)

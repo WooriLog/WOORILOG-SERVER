@@ -32,6 +32,6 @@ public class ProjectController {
 
     @GetMapping("/projects/list")
     public ResponseEntity<?> getProjectList(@UserId Long memberId) {
-        return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectListBy(memberId));
+        return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectListByMemberId(memberId));
     }
 }
