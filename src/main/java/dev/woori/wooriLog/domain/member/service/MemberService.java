@@ -3,6 +3,7 @@ package dev.woori.wooriLog.domain.member.service;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,5 +25,15 @@ public class MemberService {
     public List<MemberInfoDto> findMembersByEmail(String email) {
         List<Member> members = memberRepository.findAllByEmailContaining(email);
         return members.stream().map(MemberInfoDto::create).toList();
+    }
+
+    /**
+     * 파라미터로 넘어온 id를 갖는 회원을 반환
+     * @param userId 회원 id
+     * @return MemberDTO 회원 정보를 담은 객체
+     */
+    public MemberInfoDto findMembersById(Long userId) {
+        Member member = memberRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        return  MemberInfoDto.create(member);
     }
 }
