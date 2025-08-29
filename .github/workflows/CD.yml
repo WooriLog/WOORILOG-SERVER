@@ -60,7 +60,7 @@ jobs:
 
       - name: application.yml 생성 (Runner)
         run: |
-          printf "%s" "${{ secrets.CI_APPLICATION }}" > application.yml
+          echo "${{ secrets.CI_APPLICATION }}" > application.yml
 
       - name: application.yml 업로드 (EC2)
         uses: appleboy/scp-action@v0.1.4
