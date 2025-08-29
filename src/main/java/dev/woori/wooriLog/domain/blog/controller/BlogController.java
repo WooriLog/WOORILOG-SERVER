@@ -7,6 +7,7 @@ import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.SuccessCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class BlogController {
     public ResponseEntity<BaseResponse<?>> blogCreate(
             @PathVariable("projectId") Long projectId,
             @UserId Long userId,
-            @RequestBody BlogCreateReq request
+            @Valid  @RequestBody BlogCreateReq request
     ) {
         blogService.createBlog(projectId, userId, request);
         return ApiResponseUtil.success(SuccessCode.OK);
