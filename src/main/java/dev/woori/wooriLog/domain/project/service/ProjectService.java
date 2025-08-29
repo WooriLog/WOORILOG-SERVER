@@ -14,9 +14,6 @@ import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.wooriLog.domain.project.repository.ProjectRepository;
-import dev.woori.wooriLog.global.exception.CustomBaseException;
-import dev.woori.wooriLog.global.exception.WooriLogUseException;
-import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +96,6 @@ public class ProjectService {
 
     private void addLeaderToProject(Long leaderId, Project project) {
         Member leader = findMemberBy(leaderId);
-        validateNotJoined(project, leader);
         projectMemberRepository.save(ProjectMember.of(leader, project, LEADER));
     }
 
@@ -125,7 +121,6 @@ public class ProjectService {
                     if (member == null || !member.getEmail().equals(memberInfo.email())) {
                         throw new IllegalArgumentException();
                     }
-                    validateNotJoined(project, member);
                     return ProjectMember.of(member, project, memberInfo.role());
                 }).toList();
 
@@ -140,9 +135,7 @@ public class ProjectService {
         return memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
     }
 
-    private void validateNotJoined(Project project, Member member) {
-        if (projectMemberRepository.existsByProjectAndMember(project, member)) {
-            throw new WooriLogUseException(ErrorBaseCode.CONFLICT);
-        }
+    private Member findMemberBy(Long userId, String email) {
+        return memberRepository.findByIdAndEmail(userId, email).orElseThrow(IllegalArgumentException::new);
     }
 }
