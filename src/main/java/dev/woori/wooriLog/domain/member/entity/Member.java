@@ -20,12 +20,15 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String name;
 
     private String provider;
 
+    @Column(nullable = false, unique = true)
     private String socialId;
 
     private String introduce;

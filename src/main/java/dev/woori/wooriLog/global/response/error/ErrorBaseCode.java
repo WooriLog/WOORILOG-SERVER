@@ -16,6 +16,7 @@ public enum ErrorBaseCode implements ErrorCode {
     MISSING_PARAM(HttpStatus.BAD_REQUEST, 400, "필수 파라미터가 존재하지 않습니다."),
     NOT_READABLE(HttpStatus.BAD_REQUEST, 400, "JSON 혹은 REQUEST BODY 필드 오류 입니다."),
     INVALID_GOOGLE_CODE(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 코드입니다."),
+    INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, 400, "BODY 유효성 검사 실패 오류입니다."),
 
     /**
      * 401 UNAUTHORIZED - 리소스 접근 권한

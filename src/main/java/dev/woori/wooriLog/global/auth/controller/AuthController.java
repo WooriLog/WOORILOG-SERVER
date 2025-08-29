@@ -5,6 +5,7 @@ import dev.woori.wooriLog.global.auth.service.GoogleOAuthService;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.SuccessCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,10 @@ public class AuthController {
     }
 
     @PostMapping("/google/enroll")
-    public ResponseEntity<BaseResponse<?>> googleEnroll(@RequestHeader(name = "Authorization") String googleToken ,@RequestBody GoogleEnrollReq request) {
+    public ResponseEntity<BaseResponse<?>> googleEnroll(
+            @RequestHeader(name = "Authorization") String googleToken ,
+            @Valid  @RequestBody GoogleEnrollReq request
+    ) {
         googleToken = googleToken.startsWith("Bearer ") ?
                 googleToken.replaceFirst("Bearer ", "") : googleToken;
         return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.enroll(googleToken, request));
