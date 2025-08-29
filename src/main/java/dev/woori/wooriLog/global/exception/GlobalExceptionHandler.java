@@ -177,6 +177,7 @@ public class GlobalExceptionHandler {
                     .collect(Collectors.joining("\n"));
             return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, errorMessage);
         }
+        e.printStackTrace();
         return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }
 
@@ -195,8 +196,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<?>> handleServerException(final Exception e) {
-        if (e.getCause() != null)
-            e.printStackTrace();
+        e.printStackTrace();
         return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }
 }
