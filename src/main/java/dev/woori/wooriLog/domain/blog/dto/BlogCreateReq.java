@@ -18,6 +18,7 @@ public record BlogCreateReq(
         @NotNull
         Category category,
 
+        @NotNull
         List<String> tags
 ) {
 }
