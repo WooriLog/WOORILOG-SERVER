@@ -13,6 +13,7 @@ public enum ErrorBaseCode implements ErrorCode {
      * 400 BAD_REQUEST - 잘못된 요청
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "잘못된 요청입니다."),
+    BAD_REQUEST_ILLEGALARGUMENTS(HttpStatus.BAD_REQUEST, 40010, "잘못된 요청입니다."),
     MISSING_PARAM(HttpStatus.BAD_REQUEST, 400, "필수 파라미터가 존재하지 않습니다."),
     NOT_READABLE(HttpStatus.BAD_REQUEST, 400, "JSON 혹은 REQUEST BODY 필드 오류 입니다."),
     INVALID_GOOGLE_CODE(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 코드입니다."),
@@ -47,6 +48,7 @@ public enum ErrorBaseCode implements ErrorCode {
      * 409 CONFLICT
      */
     CONFLICT(HttpStatus.CONFLICT, 409, "이미 존재하는 리소스입니다."),
+    DB_CONFLICT(HttpStatus.CONFLICT, 409, "DB 관련 충돌 문제입니다."),
 
     /**
      * 500 INTERNAL SERVER ERROR - 서버 오류

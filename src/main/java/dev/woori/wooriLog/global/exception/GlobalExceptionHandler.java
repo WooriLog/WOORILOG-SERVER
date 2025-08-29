@@ -5,11 +5,13 @@ import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -87,7 +89,34 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<BaseResponse<?>> handleIllegalArgumentException(final IllegalArgumentException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
+        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_ILLEGALARGUMENTS);
+    }
+
+    /**
+     * 40101 - UnEnrolledException
+     * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
+     */
+    @ExceptionHandler(UnEnrolledException.class)
+    public ResponseEntity<BaseResponse<?>> handleUnEnrolledException(final UnEnrolledException e) {
+        return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
+    }
+
+    /**
+     * 403 - InvalidTokenException
+     * 예외 내용 : 유효하지 않은 토큰으로 요청했을 때 발생
+     */
+    @ExceptionHandler(JwtTokenInvalidException.class)
+    public ResponseEntity<BaseResponse<?>> handleInvalidTokenException(final JwtTokenInvalidException e) {
+        return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED);
+    }
+
+    /**
+     * 403 - ExpiredTokenException
+     * 예외 내용 : 유효기간이 만료된 토큰으로 요청했을 때 발생
+     */
+    @ExceptionHandler(JwtTokenExpiredException.class)
+    public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenExpiredException e) {
+        return ApiResponseUtil.failure(ErrorBaseCode.EXPIRED_TOKEN);
     }
 
     /**
@@ -127,30 +156,29 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 403 - InvalidTokenException
-     * 예외 내용 : 유효하지 않은 토큰으로 요청했을 때 발생
+     * 409 - DataIntegrityViolationException
+     * 예외 내용 : DB 제약조건 위반 에러 (FK/NOT NULL 등)
      */
-    @ExceptionHandler(JwtTokenInvalidException.class)
-    public ResponseEntity<BaseResponse<?>> handleInvalidTokenException(final JwtTokenInvalidException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED);
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<BaseResponse<?>> handleDataIntegrity(DataIntegrityViolationException e) {
+        return ApiResponseUtil.failure(ErrorBaseCode.DB_CONFLICT);
     }
 
     /**
-     * 40101 - UnEnrolledException
-     * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
+     * 409, 500 - TransactionSystemException, ConstraintViolationException
+     * 예외 내용 : 트랜잭션 관련 에러
      */
-    @ExceptionHandler(UnEnrolledException.class)
-    public ResponseEntity<BaseResponse<?>> handleUnEnrolledException(final UnEnrolledException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
-    }
-
-    /**
-     * 403 - ExpiredTokenException
-     * 예외 내용 : 유효기간이 만료된 토큰으로 요청했을 때 발생
-     */
-    @ExceptionHandler(JwtTokenExpiredException.class)
-    public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenExpiredException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.EXPIRED_TOKEN);
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<BaseResponse<?>> handleTx(TransactionSystemException e) {
+        Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
+        if (root instanceof ConstraintViolationException cve) {
+            String errorMessage = cve.getConstraintViolations().stream()
+                    .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                    .collect(Collectors.joining("\n"));
+            return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, errorMessage);
+        }
+        e.printStackTrace();
+        return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -168,8 +196,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<?>> handleServerException(final Exception e) {
-        if (e.getCause() != null)
-            e.printStackTrace();
-        return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR, e.getMessage());
+        e.printStackTrace();
+        return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }
 }
