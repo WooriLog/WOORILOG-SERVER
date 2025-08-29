@@ -5,9 +5,13 @@ import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,6 +32,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<BaseResponse<?>> handleCustomException(final CustomException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
+    }
+
+    /**
+     * 400 - MethodArgumentNotValidException
+     * 예외 내용 : @Valid 유효성 검사 오류 (Request Body)
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<BaseResponse<?>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        final String errorMessage = e.getBindingResult().getAllErrors().stream()
+                .map(error -> {
+                    if (error instanceof FieldError fe) {
+                        return "%s는(은) %s".formatted(fe.getField(), fe.getDefaultMessage());
+                    } else {
+                        return "%s는(은) %s".formatted(error.getObjectName(), error.getDefaultMessage());
+                    }
+                })
+                .collect(Collectors.joining("\n"));
+        return ApiResponseUtil.failure(ErrorBaseCode.INVALID_REQUEST_BODY, errorMessage);
     }
 
     /**
