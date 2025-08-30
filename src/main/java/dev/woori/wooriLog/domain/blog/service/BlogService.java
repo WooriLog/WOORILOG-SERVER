@@ -5,7 +5,9 @@ import dev.woori.wooriLog.domain.blog.dto.*;
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
+import dev.woori.wooriLog.domain.blog.entity.Progress;
 import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
+import dev.woori.wooriLog.domain.blog.repository.ProgressRepository;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
@@ -28,6 +30,7 @@ public class BlogService {
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
     private final ProjectMemberRepository projectMemberRepository;
+    private final ProgressRepository progressRepository;
 
     /**
      * 프로젝트 ID, 유저ID, Request의 새 문서 데이터를 받아 DB에 저장합니다.
@@ -38,9 +41,24 @@ public class BlogService {
      */
     @Transactional
     public Long createBlog(Long projectId, Long userId, BlogCreateReq request) {
-        Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
-        Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        return blogRepository.save(Blog.create(project, member, request)).getId();
+        // 프로젝트-멤버 관계 조회
+        ProjectMember projectMember = projectMemberRepository.findWithMemberAndProjectByIds(projectId, userId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        // Progress Entity 생성
+        List<Progress> progresses = request.progresses().stream()
+                .map(Progress::create)
+                .toList();
+
+        // Blog Entity 생성
+        Blog createdBlog = Blog.create(
+                projectMember.getProject(),
+                projectMember.getMember(),
+                request, progresses
+        );
+
+        blogRepository.save(createdBlog);
+        return createdBlog.getId();
     }
 
     /**
@@ -52,13 +70,14 @@ public class BlogService {
      */
     @Transactional
     public BlogDetailInfoRes getBlogInfo(Long postId) {
-        Blog blog = blogRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+        Blog blog = blogRepository.findBlogByIdWithDetails(postId)
+                .orElseThrow(IllegalArgumentException::new);
         Project project = blog.getProject();
-        Member member = blog.getMember();
+        Member author = blog.getMember();
         return BlogDetailInfoRes.create(
-                BlogPostDto.create(blog),
-                createBlogProjectDTO(project),
-                MemberInfoDto.create(member)
+                BlogDto.create(blog),
+                createBlogProjectDTO(project, author),
+                MemberInfoDto.create(author)
         );
     }
 
@@ -68,10 +87,12 @@ public class BlogService {
      * @param project 열람할 글을 작성한 프로젝트의 엔티티
      * @return BlogProjectDto: 열람할 글을 작성한 프로젝트의 DTO
      */
-    private BlogProjectDto createBlogProjectDTO(Project project) {
-        List<ProjectMember> projectMember = projectMemberRepository.findByProject(project);
+    private BlogProjectDto createBlogProjectDTO(Project project, Member author) {
+        List<ProjectMember> projectMember = projectMemberRepository.findWithProjectAndNotAuthorByIds(project, author);
 
-        List<MemberInfoDto> memberList = projectMember.stream().map(pm -> MemberInfoDto.create(pm.getMember())).toList();
+        List<MemberInfoDto> memberList = projectMember.stream()
+                .map(pm -> MemberInfoDto.create(pm.getMember()))
+                .toList();
 
         return BlogProjectDto.create(
                 project.getProjectName(),

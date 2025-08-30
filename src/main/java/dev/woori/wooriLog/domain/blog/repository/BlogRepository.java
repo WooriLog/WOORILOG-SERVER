@@ -3,6 +3,8 @@ package dev.woori.wooriLog.domain.blog.repository;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.project.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +15,7 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     Optional<Blog> findById(Long blogId);
 
     List<Blog> findAllByProject(Project project);
+
+    @Query("SELECT b FROM Blog b JOIN FETCH b.member JOIN FETCH b.project LEFT JOIN FETCH b.progresses WHERE b.id = :id")
+    Optional<Blog> findBlogByIdWithDetails(@Param("id") Long id);
 }

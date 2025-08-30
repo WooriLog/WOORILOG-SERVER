@@ -1,6 +1,8 @@
 package dev.woori.wooriLog.domain.blog.dto.request;
 
+import dev.woori.wooriLog.domain.blog.entity.Progress;
 import dev.woori.wooriLog.domain.blog.enums.Category;
+import dev.woori.wooriLog.domain.blog.enums.ProgressValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -19,6 +21,9 @@ public record BlogCreateReq(
         Category category,
 
         @NotNull
-        List<String> tags
+        List<String> tags,
+
+        @NotNull
+        List<ProgressDto> progresses
 ) {
 }
