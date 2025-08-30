@@ -1,6 +1,6 @@
 package dev.woori.wooriLog.domain.blog.entity;
 
-import dev.woori.wooriLog.domain.blog.dto.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.project.entity.Project;

@@ -1,4 +1,4 @@
-package dev.woori.wooriLog.domain.blog.dto;
+package dev.woori.wooriLog.domain.blog.dto.request;
 
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import jakarta.validation.constraints.NotBlank;

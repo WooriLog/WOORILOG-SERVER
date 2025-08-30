@@ -1,7 +1,8 @@
 package dev.woori.wooriLog.domain.blog.controller;
 
-import dev.woori.wooriLog.domain.blog.dto.BlogCreateReq;
-import dev.woori.wooriLog.domain.blog.dto.BlogDetailInfoRes;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.response.BlogCreateRes;
+import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.service.BlogService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
@@ -21,20 +22,22 @@ public class BlogController {
     private final BlogService blogService;
 
     @PostMapping("/blog/{projectId}")
-    public ResponseEntity<BaseResponse<?>> blogCreate(
+    public ResponseEntity<BaseResponse<?>> createBlog(
             @PathVariable("projectId") Long projectId,
             @UserId Long userId,
-            @Valid  @RequestBody BlogCreateReq request
+            @Valid @RequestBody BlogCreateReq request
     ) {
-        blogService.createBlog(projectId, userId, request);
-        return ApiResponseUtil.success(SuccessCode.OK);
+        return ApiResponseUtil.success(
+                SuccessCode.OK,
+                BlogCreateRes.from(blogService.createBlog(projectId, userId, request))
+        );
     }
 
     @GetMapping("/blog/{postId}")
-    public ResponseEntity<BaseResponse<?>> blogCreate(
+    public ResponseEntity<BaseResponse<?>> getBlogInfo(
             @PathVariable("postId") Long postId
     ) {
-        BlogDetailInfoRes res = blogService.createBlogInfoRes(postId);
+        BlogDetailInfoRes res = blogService.getBlogInfo(postId);
         return ResponseEntity.ok(BaseResponse.of(SuccessCode.OK, res));
     }
 }

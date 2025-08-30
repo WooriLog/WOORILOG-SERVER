@@ -2,6 +2,8 @@ package dev.woori.wooriLog.domain.blog.service;
 
 
 import dev.woori.wooriLog.domain.blog.dto.*;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
@@ -35,12 +37,10 @@ public class BlogService {
      * @param request 새로운 글의 데이터가 담긴 request
      */
     @Transactional
-    public void createBlog(Long projectId, Long userId, BlogCreateReq request) {
+    public Long createBlog(Long projectId, Long userId, BlogCreateReq request) {
         Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
         Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-
-        Blog newBlog = Blog.create(project, member, request);
-        blogRepository.save(newBlog);
+        return blogRepository.save(Blog.create(project, member, request)).getId();
     }
 
     /**
@@ -51,7 +51,7 @@ public class BlogService {
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes createBlogInfoRes(Long postId) {
+    public BlogDetailInfoRes getBlogInfo(Long postId) {
         Blog blog = blogRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         Project project = blog.getProject();
         Member member = blog.getMember();

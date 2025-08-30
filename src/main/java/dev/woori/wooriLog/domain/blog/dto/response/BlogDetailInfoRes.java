@@ -1,5 +1,7 @@
-package dev.woori.wooriLog.domain.blog.dto;
+package dev.woori.wooriLog.domain.blog.dto.response;
 
+import dev.woori.wooriLog.domain.blog.dto.BlogPostDto;
+import dev.woori.wooriLog.domain.blog.dto.BlogProjectDto;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import lombok.Builder;
 
