@@ -23,6 +23,7 @@ public record BlogCreateReq(
         @NotNull
         List<String> tags,
 
+        @NotNull
         List<ProgressDto> progresses
 ) {
 }

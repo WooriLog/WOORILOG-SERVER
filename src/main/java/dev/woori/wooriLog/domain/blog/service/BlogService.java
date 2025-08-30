@@ -70,7 +70,8 @@ public class BlogService {
      */
     @Transactional
     public BlogDetailInfoRes getBlogInfo(Long postId) {
-        Blog blog = blogRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+        Blog blog = blogRepository.findBlogByIdWithDetails(postId)
+                .orElseThrow(IllegalArgumentException::new);
         Project project = blog.getProject();
         Member author = blog.getMember();
         return BlogDetailInfoRes.create(

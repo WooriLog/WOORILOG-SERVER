@@ -21,7 +21,7 @@ public enum ProgressValue {
     }
 
     @JsonCreator
-    public static ProgressValue category(String value) {
+    public static ProgressValue fromValue(String value) {
         for (ProgressValue category : ProgressValue.values()) {
             if (category.value.equals(value) || category.name().equals(value)) {
                 return category;

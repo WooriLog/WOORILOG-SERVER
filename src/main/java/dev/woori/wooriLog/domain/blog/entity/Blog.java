@@ -44,8 +44,12 @@ public class Blog extends BaseEntity {
     @CollectionTable(name = "tags", joinColumns = @JoinColumn(name = "blog_id"))
     private List<String> tags;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "blog_id")
+    @OneToMany(
+            mappedBy = "blog",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Progress> progresses;
 
     public static Blog create(Project project, Member member, BlogCreateReq request, List<Progress> progresses) {
