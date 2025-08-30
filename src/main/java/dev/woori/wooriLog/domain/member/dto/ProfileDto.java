@@ -1,6 +1,5 @@
 package dev.woori.wooriLog.domain.member.dto;
 
-import dev.woori.wooriLog.domain.blog.dto.BlogInfoDto;
 import dev.woori.wooriLog.domain.blog.dto.BlogSummaryDto;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.member.entity.Member;
