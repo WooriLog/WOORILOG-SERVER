@@ -1,6 +1,7 @@
 package dev.woori.wooriLog.domain.member.controller;
 
 import dev.woori.wooriLog.domain.member.service.MemberService;
+import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.SuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,8 @@ public class MemberController {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.findMembersByEmail(email));
     }
 
-    // 개발용
-    @GetMapping("/members/{userId}")
-    public ResponseEntity<?> getMembersInfoById(@RequestParam Long userId) {
+    @GetMapping("/members")
+    public ResponseEntity<?> getMembersInfoById(@UserId Long userId) {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.findMembersById(userId));
     }
-
-    // 운영용
-//    @GetMapping("/members")
-//    public ResponseEntity<?> getMembersInfoById(@UserId Long userId) {
-//        return ApiResponseUtil.success(SuccessCode.OK, memberService.findMembersById(id));
-//    }
 }
