@@ -8,6 +8,7 @@ import dev.woori.wooriLog.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,18 +51,30 @@ public class Blog extends BaseEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Progress> progresses;
+    @Builder.Default
+    private List<Progress> progresses = new ArrayList<>();
 
     public static Blog create(Project project, Member member, BlogCreateReq request, List<Progress> progresses) {
-        return Blog.builder()
+        Blog blog = Blog.builder()
                 .document(request.document())
                 .title(request.title())
                 .project(project)
                 .member(member)
                 .category(request.category())
                 .tags(request.tags())
-                .progresses(progresses)
                 .build();
+        blog.addProgresses(progresses);
+        return blog;
+    }
+
+    private void addProgress(Progress p) {
+        this.progresses.add(p);
+        p.setBlog(this);
+    }
+
+    public void addProgresses(List<Progress> progresses) {
+        if (progresses == null) return;
+        for (Progress p : progresses) addProgress(p);
     }
 
     // id가 커밋 후에 저장되기 때문에 일단 커밋한 후 idx를 업데이트

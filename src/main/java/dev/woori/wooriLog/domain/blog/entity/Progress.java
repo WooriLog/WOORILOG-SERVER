@@ -33,4 +33,8 @@ public class Progress {
     public static Progress create(ProgressDto dto) {
         return new Progress(dto.progress(), dto.message());
     }
+
+    public void setBlog(Blog blog) {
+        this.blog = blog;
+    }
 }
