@@ -42,16 +42,18 @@ public class ProjectService {
      * @param request 프로젝트 생성 요청 DTO
      */
     @Transactional
-    public void createProject(Long leaderId, ProjectCreateReq request) {
+    public Long createProject(Long leaderId, ProjectCreateReq request) {
         // 프로젝트 생성
         Project project = Project.create(request);
-        projectRepository.save(project);
+        Long projectId = projectRepository.save(project).getId();
 
         // 리더를 프로젝트에 등록
         addLeaderToProject(leaderId, project);
 
         // 멤버들을 프로젝트에 등록
         addMembersToProject(request, project);
+
+        return projectId;
     }
 
     /**

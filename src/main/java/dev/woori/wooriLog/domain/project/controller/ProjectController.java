@@ -1,6 +1,7 @@
 package dev.woori.wooriLog.domain.project.controller;
 
 import dev.woori.wooriLog.domain.project.dto.ProjectCreateReq;
+import dev.woori.wooriLog.domain.project.dto.ProjectCreateRes;
 import dev.woori.wooriLog.domain.project.service.ProjectService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
@@ -22,8 +23,10 @@ public class ProjectController {
             @UserId Long leaderId,
             @Valid @RequestBody ProjectCreateReq request
     ) {
-        projectService.createProject(leaderId, request);
-        return ApiResponseUtil.success(SuccessCode.OK);
+        return ApiResponseUtil.success(
+                SuccessCode.OK,
+                ProjectCreateRes.from(projectService.createProject(leaderId, request))
+        );
     }
 
     @GetMapping("/projects/{projectId}")
