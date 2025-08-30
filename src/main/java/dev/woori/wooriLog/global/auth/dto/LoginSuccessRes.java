@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record LoginSuccessRes(
+        Long userId,
         String username,
         String email,
         String accessToken,
@@ -13,6 +14,7 @@ public record LoginSuccessRes(
 ) {
     public static LoginSuccessRes create(Member member, Token token) {
         return LoginSuccessRes.builder()
+                .userId(member.getId())
                 .username(member.getName())
                 .email(member.getEmail())
                 .accessToken(token.getAccessToken())
