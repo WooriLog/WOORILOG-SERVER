@@ -44,7 +44,11 @@ public class Blog extends BaseEntity {
     @CollectionTable(name = "tags", joinColumns = @JoinColumn(name = "blog_id"))
     private List<String> tags;
 
-    public static Blog create(Project project, Member member, BlogCreateReq request) {
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "blog_id")
+    private List<Progress> progresses;
+
+    public static Blog create(Project project, Member member, BlogCreateReq request, List<Progress> progresses) {
         return Blog.builder()
                 .document(request.document())
                 .title(request.title())
@@ -52,6 +56,7 @@ public class Blog extends BaseEntity {
                 .member(member)
                 .category(request.category())
                 .tags(request.tags())
+                .progresses(progresses)
                 .build();
     }
 
