@@ -21,7 +21,8 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public ResponseEntity<?> getMembersInfoById(@UserId Long userId) {
-        return ApiResponseUtil.success(SuccessCode.OK, memberService.findMembersById(userId));
+    public ResponseEntity<?> getMemberInfoById(@UserId Long userId) {
+        return ApiResponseUtil.success(SuccessCode.OK, memberService.findMemberById(userId));
     }
+
 }

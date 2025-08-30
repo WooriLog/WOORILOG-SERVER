@@ -32,7 +32,7 @@ public class MemberService {
      * @param userId 회원 id
      * @return MemberDTO 회원 정보를 담은 객체
      */
-    public MemberInfoDto findMembersById(Long userId) {
+    public MemberInfoDto findMemberById(Long userId) {
         Member member = memberRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         return  MemberInfoDto.create(member);
     }
