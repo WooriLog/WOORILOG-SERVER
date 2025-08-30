@@ -19,6 +19,7 @@ public class Blog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "blog_id")
     private Long id;
 
     private String document;
@@ -40,7 +41,7 @@ public class Blog extends BaseEntity {
     private Long idx;
 
     @ElementCollection
-    @CollectionTable(name = "tags", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "tags", joinColumns = @JoinColumn(name = "blog_id"))
     private List<String> tags;
 
     public static Blog create(Project project, Member member, BlogCreateReq request) {

@@ -5,6 +5,7 @@ import dev.woori.wooriLog.domain.project.service.ProjectService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.SuccessCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class ProjectController {
     @PostMapping("/projects")
     public ResponseEntity<?> createProject(
             @UserId Long leaderId,
-            @RequestBody ProjectCreateReq request
+            @Valid @RequestBody ProjectCreateReq request
     ) {
         projectService.createProject(leaderId, request);
         return ApiResponseUtil.success(SuccessCode.OK);
