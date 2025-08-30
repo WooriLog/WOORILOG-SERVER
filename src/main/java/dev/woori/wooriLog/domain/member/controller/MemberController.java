@@ -25,4 +25,9 @@ public class MemberController {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.findMemberById(userId));
     }
 
+    @GetMapping("/members/profile")
+    public ResponseEntity<?> getProfileInfoById(@UserId Long userId) {
+        return ApiResponseUtil.success(SuccessCode.OK, memberService.findProfileInfoById(userId));
+    }
+
 }

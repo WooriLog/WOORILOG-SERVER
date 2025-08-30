@@ -12,5 +12,7 @@ import java.util.Optional;
 public interface BlogRepository extends JpaRepository<Blog, Long> {
     Optional<Blog> findById(Long blogId);
 
+    List<Blog> findByMemberId(Long memberId);
+
     List<Blog> findAllByProject(Project project);
 }
