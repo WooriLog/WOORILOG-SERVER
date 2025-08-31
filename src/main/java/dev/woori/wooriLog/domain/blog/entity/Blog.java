@@ -23,6 +23,7 @@ public class Blog extends BaseEntity {
     @Column(name = "blog_id")
     private Long id;
 
+    @Lob
     private String document;
 
     private String title;
