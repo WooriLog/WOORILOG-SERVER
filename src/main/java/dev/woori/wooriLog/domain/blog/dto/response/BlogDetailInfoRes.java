@@ -1,16 +1,18 @@
-package dev.woori.wooriLog.domain.blog.dto;
+package dev.woori.wooriLog.domain.blog.dto.response;
 
+import dev.woori.wooriLog.domain.blog.dto.BlogDto;
+import dev.woori.wooriLog.domain.blog.dto.BlogProjectDto;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import lombok.Builder;
 
 @Builder
 public record BlogDetailInfoRes(
-        BlogPostDto post,
+        BlogDto post,
         BlogProjectDto project,
         MemberInfoDto author
 ) {
     public static BlogDetailInfoRes create(
-            BlogPostDto post,
+            BlogDto post,
             BlogProjectDto project,
             MemberInfoDto author
     ) {
