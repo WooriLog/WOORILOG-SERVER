@@ -8,8 +8,8 @@ import java.util.List;
 
 @Builder
 public record BlogProjectDto(
-        Long id,
-        String name,
+        Long projectId,
+        String projectName,
         String summary,
         List<MemberInfoDto> member
 ) {
@@ -18,8 +18,8 @@ public record BlogProjectDto(
             List<MemberInfoDto> member
     ) {
         return BlogProjectDto.builder()
-                .id(project.getId())
-                .name(project.getProjectName())
+                .projectId(project.getId())
+                .projectName(project.getProjectName())
                 .summary(project.getSummary())
                 .member(member)
                 .build();
