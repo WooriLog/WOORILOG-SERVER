@@ -94,10 +94,6 @@ public class BlogService {
                 .map(pm -> MemberInfoDto.create(pm.getMember()))
                 .toList();
 
-        return BlogProjectDto.create(
-                project.getProjectName(),
-                project.getSummary(),
-                memberList
-        );
+        return BlogProjectDto.create(project, memberList);
     }
 }
