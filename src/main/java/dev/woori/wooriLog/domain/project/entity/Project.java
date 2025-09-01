@@ -1,6 +1,6 @@
 package dev.woori.wooriLog.domain.project.entity;
 
-import dev.woori.wooriLog.domain.project.dto.ProjectCreateReq;
+import dev.woori.wooriLog.domain.project.dto.request.ProjectCreateReq;
 import dev.woori.wooriLog.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

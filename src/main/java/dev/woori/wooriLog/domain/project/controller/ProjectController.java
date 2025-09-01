@@ -1,7 +1,7 @@
 package dev.woori.wooriLog.domain.project.controller;
 
-import dev.woori.wooriLog.domain.project.dto.ProjectCreateReq;
-import dev.woori.wooriLog.domain.project.dto.ProjectCreateRes;
+import dev.woori.wooriLog.domain.project.dto.request.ProjectCreateReq;
+import dev.woori.wooriLog.domain.project.dto.response.ProjectCreateRes;
 import dev.woori.wooriLog.domain.project.service.ProjectService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectController {
 
     private final ProjectService projectService;
+
+    @GetMapping("/projects/home")
+    public ResponseEntity<?> getHomeProjectInfos() {
+        return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectBasicInfos());
+    }
 
     @PostMapping("/projects")
     public ResponseEntity<?> createProject(

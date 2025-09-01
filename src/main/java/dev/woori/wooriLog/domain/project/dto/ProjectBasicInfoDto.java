@@ -6,19 +6,15 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record ProjectInfoDto(
+public record ProjectBasicInfoDto(
         Long projectId,
         String projectName,
-        String summary,
-        String readme,
         List<String> techStack
 ) {
-    public static ProjectInfoDto create(Project project) {
-        return ProjectInfoDto.builder()
+    public static ProjectBasicInfoDto create(Project project) {
+        return ProjectBasicInfoDto.builder()
                 .projectId(project.getId())
                 .projectName(project.getProjectName())
-                .summary(project.getSummary())
-                .readme(project.getReadMe())
                 .techStack(project.getTechStack())
                 .build();
     }
