@@ -41,7 +41,7 @@ public class MemberService {
      * @return MemberDTO 회원 정보를 담은 객체
      */
     public MemberInfoDto findMemberById(Long userId) {
-        Member member = memberRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
         return  MemberInfoDto.create(member);
     }
 
