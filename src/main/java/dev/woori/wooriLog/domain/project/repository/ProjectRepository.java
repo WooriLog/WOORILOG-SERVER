@@ -14,7 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findById(Long projectId);
 
     @Query("SELECT DISTINCT p FROM Project p " +
-            "LEFT JOIN p.techStack " +
+            "LEFT JOIN FETCH p.techStack " +
             "ORDER BY p.createdAt DESC ")
     List<Project> findTopByCreatedAtDesc(Pageable pageable);
 }
