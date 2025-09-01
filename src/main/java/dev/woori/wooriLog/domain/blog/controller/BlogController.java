@@ -21,6 +21,11 @@ public class BlogController {
 
     private final BlogService blogService;
 
+    @GetMapping("/blog/home")
+    public ResponseEntity<BaseResponse<?>> getHomeBlogInfos() {
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogBasicInfos());
+    }
+
     @PostMapping("/blog/{projectId}")
     public ResponseEntity<BaseResponse<?>> createBlog(
             @PathVariable("projectId") Long projectId,
@@ -38,6 +43,6 @@ public class BlogController {
             @PathVariable("postId") Long postId
     ) {
         BlogDetailInfoRes res = blogService.getBlogInfo(postId);
-        return ResponseEntity.ok(BaseResponse.of(SuccessCode.OK, res));
+        return ApiResponseUtil.success(SuccessCode.OK, res);
     }
 }

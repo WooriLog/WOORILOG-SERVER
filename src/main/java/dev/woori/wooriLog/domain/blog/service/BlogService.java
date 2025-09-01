@@ -3,6 +3,7 @@ package dev.woori.wooriLog.domain.blog.service;
 
 import dev.woori.wooriLog.domain.blog.dto.*;
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.response.BlogBasicInfoRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.entity.Progress;
@@ -16,6 +17,7 @@ import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.wooriLog.domain.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +81,19 @@ public class BlogService {
                 createBlogProjectDTO(project, author),
                 MemberInfoDto.create(author)
         );
+    }
+
+    /**
+     * 홈 화면에 전달할 최신 5개 블로그 기본 정보 반환 메서드
+     * @return List<BlogBasicInfoRes>
+     */
+    public List<BlogBasicInfoRes> getBlogBasicInfos() {
+        List<Blog> top5OrderByCreatedAtDesc =
+                blogRepository.findTopOrderByCreatedAtDesc(PageRequest.of(0, 5));
+
+        return top5OrderByCreatedAtDesc.stream()
+                .map(BlogBasicInfoRes::create)
+                .toList();
     }
 
     /**
