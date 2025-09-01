@@ -51,10 +51,9 @@ public class MemberService {
      * @return ProfileDto 회원 정보 + 간략한 블로그 정보 + 간략한 프로젝트 정보를 담은 객체
      */
     public ProfileDto findProfileInfoById(Long userId) {
+        Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
         List<Blog> blogs = blogRepository.findByMemberId(userId);
-        List<ProjectMember> projectMembers = projectMemberRepository.findByMemberId(userId);
-        Member member = projectMembers.get(0).getMember();
-        List<Project> projects = projectMembers.stream().map(ProjectMember::getProject).toList();
+        List<Project> projects = projectMemberRepository.findByMemberId(userId);
         return ProfileDto.create(member, blogs, projects);
     }
 }
