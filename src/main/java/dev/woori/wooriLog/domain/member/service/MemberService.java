@@ -7,6 +7,7 @@ import dev.woori.wooriLog.domain.member.dto.ProfileDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
 import dev.woori.wooriLog.domain.project.entity.Project;
+import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -50,9 +51,10 @@ public class MemberService {
      * @return ProfileDto 회원 정보 + 간략한 블로그 정보 + 간략한 프로젝트 정보를 담은 객체
      */
     public ProfileDto findProfileInfoById(Long userId) {
-        Member member = memberRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         List<Blog> blogs = blogRepository.findByMemberId(userId);
-        List<Project> projects = projectMemberRepository.findByMemberId(userId);
+        List<ProjectMember> projectMembers = projectMemberRepository.findByMemberId(userId);
+        Member member = projectMembers.get(0).getMember();
+        List<Project> projects = projectMembers.stream().map(ProjectMember::getProject).toList();
         return ProfileDto.create(member, blogs, projects);
     }
 }

@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface BlogRepository extends JpaRepository<Blog, Long> {
     Optional<Blog> findById(Long blogId);
 
+    @Query("SELECT b FROM Blog b LEFT JOIN FETCH b.tags WHERE b.member.id = :memberId")
     List<Blog> findByMemberId(Long memberId);
 
     List<Blog> findAllByProject(Project project);
