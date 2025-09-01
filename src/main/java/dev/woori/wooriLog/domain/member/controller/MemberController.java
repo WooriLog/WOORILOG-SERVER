@@ -1,5 +1,6 @@
 package dev.woori.wooriLog.domain.member.controller;
 
+import dev.woori.wooriLog.domain.member.dto.MemberUpdateReq;
 import dev.woori.wooriLog.domain.member.service.MemberService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
@@ -30,4 +31,8 @@ public class MemberController {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.findProfileInfoById(userId));
     }
 
+    @PutMapping("/members/profile/{userId}")
+    public ResponseEntity<?> updateMemberInfo(@PathVariable Long userId, @RequestBody MemberUpdateReq request) {
+        return ApiResponseUtil.success(SuccessCode.OK, memberService.updateMemberInfo(userId, request));
+    }
 }

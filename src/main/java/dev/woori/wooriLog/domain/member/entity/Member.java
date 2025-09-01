@@ -52,6 +52,12 @@ public class Member extends BaseEntity {
                 .build();
     }
 
+    public void update(String name, String email, String introduce) {
+        this.name = name;
+        this.email = email;
+        this.introduce = introduce;
+    }
+
     public void updateSocialId (String socialId) {
         this.socialId = socialId;
     }
