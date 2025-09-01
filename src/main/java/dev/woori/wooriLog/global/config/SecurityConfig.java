@@ -28,7 +28,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
         private static final List<String> whiteList = List.of(
                 "/api/google/login",
-                "/api/google/enroll"
+                "/api/google/enroll",
+                "/api/projects/home",
+                "/api/blog/home"
         );
 
         @Bean
