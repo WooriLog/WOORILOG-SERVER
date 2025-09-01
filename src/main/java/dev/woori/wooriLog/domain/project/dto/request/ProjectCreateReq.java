@@ -1,4 +1,4 @@
-package dev.woori.wooriLog.domain.project.dto;
+package dev.woori.wooriLog.domain.project.dto.request;
 
 import dev.woori.wooriLog.domain.member.dto.ProjectMemberDto;
 import jakarta.validation.constraints.NotBlank;
