@@ -5,6 +5,7 @@ import dev.woori.wooriLog.domain.project.dto.response.ProjectCreateRes;
 import dev.woori.wooriLog.domain.project.service.ProjectService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
+import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("/projects/home")
-    public ResponseEntity<?> getHomeProjectInfos() {
+    public ResponseEntity<BaseResponse<?>> getHomeProjectInfos() {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectBasicInfos());
     }
 
     @PostMapping("/projects")
-    public ResponseEntity<?> createProject(
+    public ResponseEntity<BaseResponse<?>> createProject(
             @UserId Long leaderId,
             @Valid @RequestBody ProjectCreateReq request
     ) {
@@ -35,12 +36,12 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/{projectId}")
-    public ResponseEntity<?> getProjectInfo(@PathVariable Long projectId) {
+    public ResponseEntity<BaseResponse<?>> getProjectInfo(@PathVariable Long projectId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectInfo(projectId));
     }
 
     @GetMapping("/projects/list")
-    public ResponseEntity<?> getProjectList(@UserId Long memberId) {
+    public ResponseEntity<BaseResponse<?>> getProjectList(@UserId Long memberId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectListByMemberId(memberId));
     }
 }
