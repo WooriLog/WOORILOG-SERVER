@@ -8,6 +8,7 @@ import java.util.List;
 
 @Builder
 public record BlogInfoDto(
+        Long blogId,
         String title,
         Category category,
         Long idx,
@@ -15,6 +16,7 @@ public record BlogInfoDto(
 ) {
     public static BlogInfoDto create(Blog blog) {
         return BlogInfoDto.builder()
+                .blogId(blog.getId())
                 .title(blog.getTitle())
                 .category(blog.getCategory())
                 .idx(blog.getIdx())
