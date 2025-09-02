@@ -31,8 +31,8 @@ public class MemberController {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.findProfileInfoById(userId));
     }
 
-    @PutMapping("/members/profile/{userId}")
-    public ResponseEntity<?> updateMemberInfo(@PathVariable Long userId, @RequestBody MemberUpdateReq request) {
+    @PutMapping("/members/profile")
+    public ResponseEntity<?> updateMemberInfo(@UserId Long userId, @RequestBody MemberUpdateReq request) {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.updateMemberInfo(userId, request));
     }
 }
