@@ -7,6 +7,11 @@ build/
 ### application.yml ###
 **/src/main/resources/application.yml
 **/src/main/resources/application.properties
+**/src/main/resources/application-prod.yml
+
+### log ###
+**/src/main/resources/logback-dev.xml
+**/log/**
 
 ### STS ###
 .apt_generated

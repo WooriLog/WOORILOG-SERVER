@@ -7,15 +7,18 @@ import dev.woori.wooriLog.domain.member.dto.ProfileDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
 import dev.woori.wooriLog.domain.project.entity.Project;
-import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static dev.woori.wooriLog.global.response.error.ErrorMessage.USER_NOT_FOUND;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -31,6 +34,7 @@ public class MemberService {
      * @return List<MemberInfoDto> 해당하는 회원들의 정보를 담은 DTO
      */
     public List<MemberInfoDto> findMembersByEmail(String email) {
+        log.info("[Member Service] findMembersByEmail : email={}", email);
         List<Member> members = memberRepository.findAllByEmailContaining(email);
         return members.stream().map(MemberInfoDto::create).toList();
     }
@@ -40,8 +44,9 @@ public class MemberService {
      * @param userId 회원 id
      * @return MemberDTO 회원 정보를 담은 객체
      */
-    public MemberInfoDto findMemberById(Long userId) {
-        Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+    public MemberInfoDto getMemberInfo(Long userId) {
+        log.info("[Member Service] getMemberInfo : memberId={}", userId);
+        Member member = findMemberByIdOrThrow(userId);
         return  MemberInfoDto.create(member);
     }
 
@@ -50,10 +55,17 @@ public class MemberService {
      * @param userId 회원 id
      * @return ProfileDto 회원 정보 + 간략한 블로그 정보 + 간략한 프로젝트 정보를 담은 객체
      */
-    public ProfileDto findProfileInfoById(Long userId) {
-        Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+    public ProfileDto getProfileInfoById(Long userId) {
+        log.info("[Member Service] getProfileInfoById : memberId={}", userId);
+
+        Member member = findMemberByIdOrThrow(userId);
         List<Blog> blogs = blogRepository.findByMemberId(userId);
         List<Project> projects = projectMemberRepository.findByMemberId(userId);
         return ProfileDto.create(member, blogs, projects);
+    }
+
+    private Member findMemberByIdOrThrow(Long userId) {
+        return memberRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 }

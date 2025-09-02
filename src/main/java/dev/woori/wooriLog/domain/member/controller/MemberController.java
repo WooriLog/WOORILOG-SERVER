@@ -22,12 +22,12 @@ public class MemberController {
 
     @GetMapping("/members")
     public ResponseEntity<?> getMemberInfoById(@UserId Long userId) {
-        return ApiResponseUtil.success(SuccessCode.OK, memberService.findMemberById(userId));
+        return ApiResponseUtil.success(SuccessCode.OK, memberService.getMemberInfo(userId));
     }
 
     @GetMapping("/members/profile")
     public ResponseEntity<?> getProfileInfoById(@UserId Long userId) {
-        return ApiResponseUtil.success(SuccessCode.OK, memberService.findProfileInfoById(userId));
+        return ApiResponseUtil.success(SuccessCode.OK, memberService.getProfileInfoById(userId));
     }
 
 }

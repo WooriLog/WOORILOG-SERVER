@@ -15,7 +15,9 @@ import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.wooriLog.domain.project.repository.ProjectRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static dev.woori.wooriLog.domain.DomainConstants.LEADER;
+import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -45,6 +49,7 @@ public class ProjectService {
      */
     @Transactional
     public Long createProject(Long leaderId, ProjectCreateReq request) {
+        log.info("[Project Service] Create Project");
         // 프로젝트 생성
         Project project = Project.create(request);
         Long projectId = projectRepository.save(project).getId();
@@ -65,7 +70,10 @@ public class ProjectService {
      */
     @Transactional
     public ProjectInfoRes getProjectInfo(Long projectId) {
+        log.info("[Project Service] getProjectInfo : projectId={}", projectId);
+
         Project project = findProjectBy(projectId);
+
         List<Member> projectMembers = projectMemberRepository.findMembersByProject(project);
         List<Blog> blogPosts = blogRepository.findAllByProject(project);
 
@@ -90,6 +98,8 @@ public class ProjectService {
      * @return List<ProjectDetailInfoDto>
      */
     public List<ProjectDetailInfoDto> getProjectListByMemberId(Long memberId) {
+        log.info("[Project Service] getProjectListByMemberId : memberId={}", memberId);
+
         Member member = findMemberBy(memberId);
         List<Project> projectList = projectMemberRepository.findProjectsByMember(member);
 
@@ -103,6 +113,8 @@ public class ProjectService {
      * @return List<ProjectBasicInfoDto>
      */
     public List<ProjectBasicInfoDto> getProjectBasicInfos() {
+        log.info("[Project Service] getProjectBasicInfos");
+
         List<Project> topByCreatedAtDesc =
                 projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
 
@@ -136,7 +148,7 @@ public class ProjectService {
                 .map(memberInfo -> {
                     Member member = memberMap.get(memberInfo.userId());
                     if (member == null || !member.getEmail().equals(memberInfo.email())) {
-                        throw new IllegalArgumentException();
+                        throw new IllegalArgumentException(INVALID_MEMBER_EMAIL + memberInfo.email());
                     }
                     return ProjectMember.of(member, project, memberInfo.role());
                 }).toList();
@@ -145,14 +157,10 @@ public class ProjectService {
     }
 
     private Project findProjectBy(Long projectId) {
-        return projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
+        return projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND));
     }
 
     private Member findMemberBy(Long userId) {
-        return memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Member findMemberBy(Long userId, String email) {
-        return memberRepository.findByIdAndEmail(userId, email).orElseThrow(IllegalArgumentException::new);
+        return memberRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 }
