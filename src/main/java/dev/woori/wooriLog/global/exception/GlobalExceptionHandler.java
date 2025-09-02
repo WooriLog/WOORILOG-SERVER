@@ -213,7 +213,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<?>> handleServerException(final Exception e) {
         logWarn(e);
-        e.printStackTrace();
         return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }
 
