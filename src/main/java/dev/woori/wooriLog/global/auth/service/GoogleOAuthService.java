@@ -11,10 +11,12 @@ import dev.woori.wooriLog.global.exception.UnEnrolledException;
 import dev.woori.wooriLog.global.exception.WooriLogUseException;
 import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleOAuthService {
@@ -30,6 +32,7 @@ public class GoogleOAuthService {
      */
     @Transactional
     public LoginSuccessRes login(GoogleLoginReq request) {
+        log.info("[Login] Login Request");
 
         // Google API & OAuth
         GoogleTokenRes googleToken = feignProvider.getGoogleToken(request.authorizationCode());
@@ -52,6 +55,7 @@ public class GoogleOAuthService {
      */
     @Transactional
     public LoginSuccessRes enroll(final String accessToken, GoogleEnrollReq request) {
+        log.info("[Auth Service] Member Enroll : request={}", request);
 
         GoogleUserInfoRes userInfo = getUserInfo(accessToken);
         isEnrolled(userInfo.email());
