@@ -10,7 +10,7 @@ build/
 **/src/main/resources/application-prod.yml
 
 ### log ###
-**/resources/logback-dev.xml
+**/src/main/resources/logback-dev.xml
 **/log/**
 
 ### STS ###
