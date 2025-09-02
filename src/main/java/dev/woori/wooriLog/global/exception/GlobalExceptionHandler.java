@@ -6,6 +6,7 @@ import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -23,16 +24,19 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomBaseException.class)
     public ResponseEntity<BaseResponse<?>> handleCustomBaseException(final CustomBaseException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(e.getErrorCode()); // 409/메시지 등 ErrorCode 기반으로 응답
     }
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<BaseResponse<?>> handleCustomException(final CustomException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
     }
 
@@ -51,6 +55,7 @@ public class GlobalExceptionHandler {
                     }
                 })
                 .collect(Collectors.joining("\n"));
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.INVALID_REQUEST_BODY, errorMessage);
     }
 
@@ -61,6 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<BaseResponse<?>> handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         final String errorMessage = "누락 파라미터 : " + e.getParameterName();
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.MISSING_PARAM, errorMessage);
     }
 
@@ -70,6 +76,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<BaseResponse<?>> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
+        logWarn(e);
         // JSON 매핑 오류
         if (e.getCause() instanceof JsonMappingException jsonMappingException) {
 
@@ -89,6 +96,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<BaseResponse<?>> handleIllegalArgumentException(final IllegalArgumentException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_ILLEGALARGUMENTS);
     }
 
@@ -98,6 +106,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnEnrolledException.class)
     public ResponseEntity<BaseResponse<?>> handleUnEnrolledException(final UnEnrolledException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
     }
 
@@ -107,6 +116,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JwtTokenInvalidException.class)
     public ResponseEntity<BaseResponse<?>> handleInvalidTokenException(final JwtTokenInvalidException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED);
     }
 
@@ -116,6 +126,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(JwtTokenExpiredException.class)
     public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenExpiredException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.EXPIRED_TOKEN);
     }
 
@@ -125,7 +136,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<BaseResponse<?>> handleEntityNotFoundException(final EntityNotFoundException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_ENTITY);
+        return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_ENTITY, e.getMessage());
     }
 
     /**
@@ -134,6 +145,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<BaseResponse<?>> handleNoHandlerFoundException(final NoHandlerFoundException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_API);
     }
 
@@ -152,6 +164,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<BaseResponse<?>> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.METHOD_NOT_ALLOWED);
     }
 
@@ -161,6 +174,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<BaseResponse<?>> handleDataIntegrity(DataIntegrityViolationException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.DB_CONFLICT);
     }
 
@@ -170,6 +184,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<BaseResponse<?>> handleTx(TransactionSystemException e) {
+        logWarn(e);
         Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
         if (root instanceof ConstraintViolationException cve) {
             String errorMessage = cve.getConstraintViolations().stream()
@@ -187,6 +202,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnsupportedEncodingException.class)
     public ResponseEntity<BaseResponse<?>> handleUrlDecodeException(final UnsupportedEncodingException e) {
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.URL_DECODE_ERROR);
     }
 
@@ -196,7 +212,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<?>> handleServerException(final Exception e) {
-        e.printStackTrace();
+        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
+    }
+
+    private void logWarn(Exception e) {
+        log.warn("[{}]: message={}", e.getClass().getSimpleName(), e.getMessage(), e);
     }
 }

@@ -7,14 +7,18 @@ import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import dev.woori.wooriLog.domain.member.dto.ProjectMemberDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
-import dev.woori.wooriLog.domain.project.dto.ProjectCreateReq;
-import dev.woori.wooriLog.domain.project.dto.ProjectInfoDto;
-import dev.woori.wooriLog.domain.project.dto.ProjectInfoRes;
+import dev.woori.wooriLog.domain.project.dto.ProjectBasicInfoDto;
+import dev.woori.wooriLog.domain.project.dto.request.ProjectCreateReq;
+import dev.woori.wooriLog.domain.project.dto.ProjectDetailInfoDto;
+import dev.woori.wooriLog.domain.project.dto.response.ProjectInfoRes;
 import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.wooriLog.domain.project.repository.ProjectRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +29,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static dev.woori.wooriLog.domain.DomainConstants.LEADER;
+import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,6 +49,7 @@ public class ProjectService {
      */
     @Transactional
     public Long createProject(Long leaderId, ProjectCreateReq request) {
+        log.info("[Project Service] Create Project");
         // 프로젝트 생성
         Project project = Project.create(request);
         Long projectId = projectRepository.save(project).getId();
@@ -63,7 +70,10 @@ public class ProjectService {
      */
     @Transactional
     public ProjectInfoRes getProjectInfo(Long projectId) {
+        log.info("[Project Service] getProjectInfo : projectId={}", projectId);
+
         Project project = findProjectBy(projectId);
+
         List<Member> projectMembers = projectMemberRepository.findMembersByProject(project);
         List<Blog> blogPosts = blogRepository.findAllByProject(project);
 
@@ -76,7 +86,7 @@ public class ProjectService {
                 .toList();
 
         return ProjectInfoRes.of(
-                ProjectInfoDto.create(project),
+                ProjectDetailInfoDto.create(project),
                 blogInfos,
                 memberInfos
         );
@@ -85,14 +95,31 @@ public class ProjectService {
     /**
      * 유저가 속한 프로젝트들을 리스트로 반환
      * @param memberId 유저 ID
-     * @return List<ProjectInfoDto>
+     * @return List<ProjectDetailInfoDto>
      */
-    public List<ProjectInfoDto> getProjectListByMemberId(Long memberId) {
+    public List<ProjectDetailInfoDto> getProjectListByMemberId(Long memberId) {
+        log.info("[Project Service] getProjectListByMemberId : memberId={}", memberId);
+
         Member member = findMemberBy(memberId);
         List<Project> projectList = projectMemberRepository.findProjectsByMember(member);
 
         return projectList.stream()
-                .map(ProjectInfoDto::create)
+                .map(ProjectDetailInfoDto::create)
+                .toList();
+    }
+
+    /**
+     * 홈 화면에 전달할 최신 5개 프로젝트 기본 정보 반환 메서드
+     * @return List<ProjectBasicInfoDto>
+     */
+    public List<ProjectBasicInfoDto> getProjectBasicInfos() {
+        log.info("[Project Service] getProjectBasicInfos");
+
+        List<Project> topByCreatedAtDesc =
+                projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
+
+        return topByCreatedAtDesc.stream()
+                .map(ProjectBasicInfoDto::create)
                 .toList();
     }
 
@@ -121,7 +148,7 @@ public class ProjectService {
                 .map(memberInfo -> {
                     Member member = memberMap.get(memberInfo.userId());
                     if (member == null || !member.getEmail().equals(memberInfo.email())) {
-                        throw new IllegalArgumentException();
+                        throw new IllegalArgumentException(INVALID_MEMBER_EMAIL + memberInfo.email());
                     }
                     return ProjectMember.of(member, project, memberInfo.role());
                 }).toList();
@@ -130,14 +157,10 @@ public class ProjectService {
     }
 
     private Project findProjectBy(Long projectId) {
-        return projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
+        return projectRepository.findById(projectId).orElseThrow(() -> new EntityNotFoundException(PROJECT_NOT_FOUND));
     }
 
     private Member findMemberBy(Long userId) {
-        return memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-    }
-
-    private Member findMemberBy(Long userId, String email) {
-        return memberRepository.findByIdAndEmail(userId, email).orElseThrow(IllegalArgumentException::new);
+        return memberRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 }

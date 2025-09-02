@@ -3,7 +3,7 @@ package dev.woori.wooriLog.domain.member.dto;
 import dev.woori.wooriLog.domain.blog.dto.BlogSummaryDto;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.member.entity.Member;
-import dev.woori.wooriLog.domain.project.dto.ProjectSummaryDto;
+import dev.woori.wooriLog.domain.project.dto.ProjectBasicInfoDto;
 import dev.woori.wooriLog.domain.project.entity.Project;
 import lombok.Builder;
 
@@ -16,14 +16,14 @@ public record ProfileDto(
         String name,
         String introduce,
         List<BlogSummaryDto> blogList,
-        List<ProjectSummaryDto> projectList
+        List<ProjectBasicInfoDto> projectList
 ) {
     public static ProfileDto create(Member member, List<Blog> blogs, List<Project> projects) {
         List<BlogSummaryDto> blogSummaryDtos = blogs.stream()
                 .map(BlogSummaryDto::create)
                 .toList();
-        List<ProjectSummaryDto> projectSummaryDtos = projects.stream()
-                .map(ProjectSummaryDto::create)
+        List<ProjectBasicInfoDto> projectBasicInfoDtos = projects.stream()
+                .map(ProjectBasicInfoDto::create)
                 .toList();
         return ProfileDto.builder()
                 .userId(member.getId())
@@ -31,7 +31,7 @@ public record ProfileDto(
                 .name(member.getName())
                 .introduce(member.getIntroduce())
                 .blogList(blogSummaryDtos)
-                .projectList(projectSummaryDtos)
+                .projectList(projectBasicInfoDtos)
                 .build();
     }
 }

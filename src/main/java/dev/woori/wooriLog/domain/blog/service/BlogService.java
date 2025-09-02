@@ -3,34 +3,35 @@ package dev.woori.wooriLog.domain.blog.service;
 
 import dev.woori.wooriLog.domain.blog.dto.*;
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.response.BlogBasicInfoRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.entity.Progress;
 import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
-import dev.woori.wooriLog.domain.blog.repository.ProgressRepository;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
-import dev.woori.wooriLog.domain.member.repository.MemberRepository;
 import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
-import dev.woori.wooriLog.domain.project.repository.ProjectRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BlogService {
 
     private final BlogRepository blogRepository;
-    private final ProjectRepository projectRepository;
-    private final MemberRepository memberRepository;
     private final ProjectMemberRepository projectMemberRepository;
-    private final ProgressRepository progressRepository;
 
     /**
      * 프로젝트 ID, 유저ID, Request의 새 문서 데이터를 받아 DB에 저장합니다.
@@ -41,9 +42,10 @@ public class BlogService {
      */
     @Transactional
     public Long createBlog(Long projectId, Long userId, BlogCreateReq request) {
+        log.info("[Blog Service] Create Blog : projectId={}, userId={}", projectId, userId);
         // 프로젝트-멤버 관계 조회
         ProjectMember projectMember = projectMemberRepository.findWithMemberAndProjectByIds(projectId, userId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new EntityNotFoundException(RELATION_NOT_FOUND));
 
         // Progress Entity 생성
         List<Progress> progresses = request.progresses().stream()
@@ -70,15 +72,33 @@ public class BlogService {
      */
     @Transactional
     public BlogDetailInfoRes getBlogInfo(Long postId) {
+        log.info("[Blog Service] Get Blog Info : blogId={}", postId);
+
         Blog blog = blogRepository.findBlogByIdWithDetails(postId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+
         Project project = blog.getProject();
         Member author = blog.getMember();
+
         return BlogDetailInfoRes.create(
                 BlogDto.create(blog),
                 createBlogProjectDTO(project, author),
                 MemberInfoDto.create(author)
         );
+    }
+
+    /**
+     * 홈 화면에 전달할 최신 5개 블로그 기본 정보 반환 메서드
+     * @return List<BlogBasicInfoRes>
+     */
+    public List<BlogBasicInfoRes> getBlogBasicInfos() {
+        log.info("[Blog Service] getBlogBasicInfos");
+        List<Blog> top5OrderByCreatedAtDesc =
+                blogRepository.findTopOrderByCreatedAtDesc(PageRequest.of(0, 5));
+
+        return top5OrderByCreatedAtDesc.stream()
+                .map(BlogBasicInfoRes::create)
+                .toList();
     }
 
     /**
