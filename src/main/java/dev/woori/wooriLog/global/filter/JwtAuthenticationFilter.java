@@ -40,9 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-        if ("GET".equalsIgnoreCase(request.getMethod()) &&
-                (pathMatcher.match("/api/projects/*", uri) || pathMatcher.match("/api/blog/*", uri))) {
-            return true;
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            if (pathMatcher.match("/api/projects/list", uri)) {
+                return false;
+            }
+            if (pathMatcher.match("/api/projects/*", uri) || pathMatcher.match("/api/blog/*", uri)) {
+                return true;
+            }
         }
 
         return whiteList.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
