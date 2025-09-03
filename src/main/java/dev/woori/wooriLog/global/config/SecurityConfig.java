@@ -7,6 +7,7 @@
     import lombok.RequiredArgsConstructor;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
+    import org.springframework.http.HttpMethod;
     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
     import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
     import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -46,7 +47,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
                     .exceptionHandling(
                             exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/projects/*").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/blog/*").permitAll()
                             .requestMatchers(whiteList.toArray(new String[0])).permitAll()
                             .anyRequest().authenticated()
                     )
