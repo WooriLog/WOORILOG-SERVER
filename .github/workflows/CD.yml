@@ -61,7 +61,7 @@ jobs:
       - name: application.yml 생성 (Runner)
         run: |
           echo "${{ secrets.APPLICATION }}" > application.yml
-          ehco "${{ secrets.APPLICATION_DEV }}" > application_dev.yml
+          echo "${{ secrets.APPLICATION_DEV }}" > application_dev.yml
 
       - name: application.yml & application_dev.yml 업로드 (EC2)
         uses: appleboy/scp-action@v0.1.4
