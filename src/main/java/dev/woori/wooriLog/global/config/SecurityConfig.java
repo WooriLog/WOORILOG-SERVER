@@ -48,6 +48,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
                             exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/projects/list").authenticated()
                             .requestMatchers(HttpMethod.GET, "/api/projects/*").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/blog/*").permitAll()
                             .requestMatchers(whiteList.toArray(new String[0])).permitAll()
