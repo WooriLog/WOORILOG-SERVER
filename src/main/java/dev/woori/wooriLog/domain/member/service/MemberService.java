@@ -73,7 +73,8 @@ public class MemberService {
      */
     @Transactional
     public MemberInfoDto updateMemberInfo(Long userId, MemberUpdateReq request) {
-        Member member = memberRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+        log.info("[Member Service] updateMemberInfo : memberId={}", userId);
+        Member member = findMemberByIdOrThrow(userId);
         member.update(request.name(), request.email(), request.introduce());
         return MemberInfoDto.create(member);
     }
