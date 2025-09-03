@@ -30,10 +30,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
                 "/api/google/login",
                 "/api/google/enroll",
                 "/api/projects/home",
-                "/api/blog/home",
-                "/api/blog/**", // 시연을 위한 임시 개방
-                "/api/members/**", // 시연을 위한 임시 개방
-                "/api/projects/**" // 시연을 위한 임시 개방
+                "/api/blog/home"
         );
 
         @Bean
