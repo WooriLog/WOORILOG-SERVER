@@ -8,6 +8,7 @@ build/
 **/src/main/resources/application.yml
 **/src/main/resources/application.properties
 **/src/main/resources/application-prod.yml
+**/src/main/resources/application-dev.yml
 
 ### log ###
 **/src/main/resources/logback-dev.xml
