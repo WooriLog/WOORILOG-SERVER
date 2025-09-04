@@ -49,7 +49,7 @@ public class BlogService {
 
         // Progress Entity 생성
         List<Progress> progresses = request.progresses().stream()
-                .filter(progressDto -> !progressDto.message().isBlank())
+                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
                 .map(Progress::create)
                 .toList();
 
