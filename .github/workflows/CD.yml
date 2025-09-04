@@ -61,14 +61,15 @@ jobs:
       - name: application.yml 생성 (Runner)
         run: |
           echo "${{ secrets.APPLICATION }}" > application.yml
+          echo "${{ secrets.APPLICATION_DEV }}" > application_dev.yml
 
-      - name: application.yml 업로드 (EC2)
+      - name: application.yml & application_dev.yml 업로드 (EC2)
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: application.yml
+          source: "application.yml,application_dev.yml"
           target: /opt/apps/woorilog/shared/
           overwrite: true
 
