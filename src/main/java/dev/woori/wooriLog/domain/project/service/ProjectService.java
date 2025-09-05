@@ -146,6 +146,7 @@ public class ProjectService {
 
         List<ProjectMember> relations = members.stream()
                 .filter(Objects::nonNull)
+                .filter(memberInfo -> !Objects.equals(memberInfo.userId(), leaderId))
                 .map(memberInfo -> {
                     Member member = memberMap.get(memberInfo.userId());
                     if (member == null || !member.getEmail().equals(memberInfo.email())) {
