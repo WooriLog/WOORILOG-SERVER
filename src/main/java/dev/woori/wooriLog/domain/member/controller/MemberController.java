@@ -18,8 +18,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/members/search")
-    public ResponseEntity<?> getMembersInfoByEmail(@RequestParam String email) {
-        return ApiResponseUtil.success(SuccessCode.OK, memberService.findMembersByEmail(email));
+    public ResponseEntity<?> getMembersInfoByEmail(@RequestParam String email, @UserId Long memberId) {
+        return ApiResponseUtil.success(SuccessCode.OK, memberService.findMembersByEmail(email, memberId));
     }
 
     @GetMapping("/members")
