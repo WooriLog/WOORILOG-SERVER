@@ -1,5 +1,6 @@
 package dev.woori.wooriLog.domain.member.entity;
 
+import dev.woori.wooriLog.domain.member.dto.MemberUpdateReq;
 import dev.woori.wooriLog.global.auth.dto.GoogleEnrollReq;
 import dev.woori.wooriLog.global.auth.dto.GoogleUserInfoRes;
 import dev.woori.wooriLog.global.common.BaseEntity;
@@ -50,6 +51,11 @@ public class Member extends BaseEntity {
                 .socialId(userInfo.sub())
                 .introduce(req.introduce())
                 .build();
+    }
+
+    public void update(MemberUpdateReq request) {
+        this.name = request.name();
+        this.introduce = request.introduce();
     }
 
     public void updateSocialId (String socialId) {

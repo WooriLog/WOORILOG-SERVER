@@ -3,6 +3,7 @@ package dev.woori.wooriLog.domain.member.service;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
+import dev.woori.wooriLog.domain.member.dto.MemberUpdateReq;
 import dev.woori.wooriLog.domain.member.dto.ProfileDto;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.member.repository.MemberRepository;
@@ -62,6 +63,20 @@ public class MemberService {
         List<Blog> blogs = blogRepository.findByMemberId(userId);
         List<Project> projects = projectMemberRepository.findByMemberId(userId);
         return ProfileDto.create(member, blogs, projects);
+    }
+
+    /**
+     * 회원 id 및 request 정보를 바탕으로 회원 정보를 수정
+     * @param userId 회원 id
+     * @param request 수정될 회원 정보를 담은 request 객체
+     * @return MemberInfoDto 수정된 회원 정보를 담은 dto 객체
+     */
+    @Transactional
+    public MemberInfoDto updateMemberInfo(Long userId, MemberUpdateReq request) {
+        log.info("[Member Service] updateMemberInfo : memberId={}", userId);
+        Member member = findMemberByIdOrThrow(userId);
+        member.update(request);
+        return MemberInfoDto.create(member);
     }
 
     private Member findMemberByIdOrThrow(Long userId) {
