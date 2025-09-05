@@ -58,7 +58,7 @@ public class ProjectService {
         addLeaderToProject(leaderId, project);
 
         // 멤버들을 프로젝트에 등록
-        addMembersToProject(request, project);
+        addMembersToProject(leaderId, request, project);
 
         return projectId;
     }
@@ -128,7 +128,7 @@ public class ProjectService {
         projectMemberRepository.save(ProjectMember.of(leader, project, LEADER));
     }
 
-    private void addMembersToProject(ProjectCreateReq request, Project project) {
+    private void addMembersToProject(Long leaderId, ProjectCreateReq request, Project project) {
         List<ProjectMemberDto> members = request.members();
         if (members == null || members.isEmpty()) {
             return;
@@ -137,6 +137,7 @@ public class ProjectService {
         List<Long> memberIds = members.stream()
                 .filter(Objects::nonNull)
                 .map(ProjectMemberDto::userId)
+                .filter(userId -> !Objects.equals(userId, leaderId))
                 .toList();
 
         // N+1 문제 개선을 위해 전체 멤버 조회 후 Map으로 저장하여 Map에서 필터링 및 DTO 변환 -> O(1)으로 유저 탐색 가능

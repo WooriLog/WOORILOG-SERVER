@@ -31,11 +31,14 @@ public class MemberService {
     /**
      * 파라미터로 넘어온 email을 포함하는 이메일을 가진 유저들을 반환
      * @param email 찾고자 하는 유저의 부분 email 문자열
+     * @param memberId 요청한 클라이언트 id
      * @return List<MemberInfoDto> 해당하는 회원들의 정보를 담은 DTO
      */
-    public List<MemberInfoDto> findMembersByEmail(String email) {
+    public List<MemberInfoDto> findMembersByEmail(String email, Long memberId) {
         log.info("[Member Service] findMembersByEmail : email={}", email);
-        List<Member> members = memberRepository.findAllByEmailContaining(email);
+        log.info("{}", memberId);
+
+        List<Member> members = memberRepository.findAllByEmailContainingAndIdNot(email, memberId);
         return members.stream().map(MemberInfoDto::create).toList();
     }
 
