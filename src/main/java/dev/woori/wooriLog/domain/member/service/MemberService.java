@@ -36,7 +36,6 @@ public class MemberService {
      */
     public List<MemberInfoDto> findMembersByEmail(String email, Long memberId) {
         log.info("[Member Service] findMembersByEmail : email={}", email);
-        log.info("{}", memberId);
 
         List<Member> members = memberRepository.findAllByEmailContainingAndIdNot(email, memberId);
         return members.stream().map(MemberInfoDto::create).toList();
