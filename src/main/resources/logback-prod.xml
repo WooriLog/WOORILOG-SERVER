@@ -1,5 +1,7 @@
 <configuration>
+    <property name="LOG_DIR" value="/var/log/woorilog"/>
     <property name="LOG_FILE" value="application-prod.log"/>
+    <property name="ACTIVE_LOG" value="${LOG_DIR}/application.log"/>
 
     <!-- 콘솔 출력 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -10,10 +12,17 @@
 
     <!-- 파일 출력 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_FILE}</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/var/log/woorilog/application.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>3</maxHistory>
+        <file>${ACTIVE_LOG}</file>
+        <append>true</append>
+        <!-- 날짜+용량 기준 롤링 권장 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 아카이브 파일 경로 -->
+            <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 총 보관 용량 한도 -->
+            <totalSizeCap>1GB</totalSizeCap>
+            <!-- 보관 일수 -->
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
