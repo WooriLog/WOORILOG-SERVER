@@ -1,0 +1,96 @@
+name: CD
+
+on:
+  push:
+    branches: ["dev"]
+
+concurrency:
+  group: woorilog-dev
+  cancel-in-progress: true
+
+jobs:
+  CI:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v3
+
+      - name: JDK17 설치
+        uses: actions/setup-java@v3
+        with:
+          distribution: corretto
+          java-version: "17"
+
+      - name: JAR 빌드
+        run: |
+          chmod +x gradlew
+          ./gradlew build -x test
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Docker Image 빌드 및 태깅 (DEV)
+        run: |
+          VERSION=0.${{ github.run_number }}
+          echo "VERSION=$VERSION"
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:$VERSION .
+          docker tag  ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:$VERSION \
+                      ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:dev
+
+      - name: Docker Image 푸쉬 (DEV)
+        run: |
+          VERSION=0.${{ github.run_number }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:$VERSION
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server:dev
+
+  CD:
+    needs: CI
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: EC2 설정 디렉터리 준비
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_EC2_IP }}
+          username: ${{ secrets.DEV_EC2_USER }}
+          key: ${{ secrets.DEV_EC2_KEY }}
+          script: |
+            sudo mkdir -p /opt/apps/woorilog/shared
+            sudo chown -R $USER:$USER /opt/apps/woorilog
+
+      - name: application.yml 생성 (Runner)
+        run: |
+          echo "${{ secrets.APPLICATION_DEV }}" > application_dev.yml
+
+      - name: application_dev.yml 업로드 (EC2)
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DEV_EC2_IP }}
+          username: ${{ secrets.DEV_EC2_USER }}
+          key: ${{ secrets.DEV_EC2_KEY }}
+          source: "application_dev.yml"
+          target: /opt/apps/woorilog/shared/
+          overwrite: true
+
+      - name: EC2 내부 DOCKER 컨테이너 실행
+        uses: appleboy/ssh-action@master
+        env:
+          DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PW:   ${{ secrets.DOCKERHUB_PASSWORD }}
+          IMAGE_NAME:  ${{ secrets.DOCKERHUB_USERNAME }}/woorilog-server
+          IMAGE_TAG:   dev
+        with:
+          host: ${{ secrets.DEV_EC2_IP }}
+          username: ${{ secrets.DEV_EC2_USER }}
+          key: ${{ secrets.DEV_EC2_KEY }}
+          envs: DOCKER_USER,DOCKER_PW,IMAGE_NAME,IMAGE_TAG
+          script: |
+            export DOCKER_USER="${DOCKER_USER}"
+            export DOCKER_PW="${DOCKER_PW}"
+            export IMAGE_NAME="${IMAGE_NAME}"
+            export IMAGE_TAG="${IMAGE_TAG}"
+            bash ~/deploy_dev.sh
