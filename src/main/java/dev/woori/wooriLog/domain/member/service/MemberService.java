@@ -75,8 +75,8 @@ public class MemberService {
     public MemberInfoDto updateMemberInfo(Long userId, MemberUpdateReq request) {
         log.info("[Member Service] updateMemberInfo : memberId={}", userId);
         Member member = findMemberByIdOrThrow(userId);
-        member.update(request.name(), request.introduce());
-        return MemberInfoDto.create(memberRepository.save(member));
+        member.update(request);
+        return MemberInfoDto.create(member);
     }
 
     private Member findMemberByIdOrThrow(Long userId) {

@@ -5,6 +5,7 @@ import dev.woori.wooriLog.domain.member.service.MemberService;
 import dev.woori.wooriLog.global.resolver.UserId;
 import dev.woori.wooriLog.global.response.ApiResponseUtil;
 import dev.woori.wooriLog.global.response.SuccessCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class MemberController {
     }
 
     @PutMapping("/members/profile")
-    public ResponseEntity<?> updateMemberInfo(@UserId Long userId, @RequestBody MemberUpdateReq request) {
+    public ResponseEntity<?> updateMemberInfo(@UserId Long userId, @Valid @RequestBody MemberUpdateReq request) {
         return ApiResponseUtil.success(SuccessCode.OK, memberService.updateMemberInfo(userId, request));
     }
 }
