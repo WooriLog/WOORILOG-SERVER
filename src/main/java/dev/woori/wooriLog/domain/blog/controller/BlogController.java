@@ -1,7 +1,6 @@
 package dev.woori.wooriLog.domain.blog.controller;
 
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateOrUpdateReq;
-import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogCreateRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.service.BlogService;
