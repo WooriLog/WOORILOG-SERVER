@@ -3,6 +3,7 @@ package dev.woori.wooriLog.domain.blog.service;
 
 import dev.woori.wooriLog.domain.blog.dto.*;
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogBasicInfoRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
@@ -17,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,5 +118,22 @@ public class BlogService {
                 .toList();
 
         return BlogProjectDto.create(project, memberList);
+    }
+
+    /**
+     * 블로그 id와 수정된 블로그 포스팅 정보를 통해 블로그 글을 수정
+     * @param blogId 블로그 id
+     * @param request 블로그 수정 폼에 담긴 내용들
+     * @return blogId 블로그 id
+     */
+    @Transactional
+    public Long updateBlog(Long userId, Long blogId, BlogUpdateReq request) {
+        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+        if(!blog.getMember().getId().equals(userId)){
+            throw new AccessDeniedException(BLOG_ACCESS_DENIED);
+        }
+        blog.update(request);
+        log.info("[Blog Service] Update Blog : blogId={}", blogId);
+        return blogId;
     }
 }

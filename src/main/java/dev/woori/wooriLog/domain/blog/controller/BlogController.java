@@ -1,6 +1,7 @@
 package dev.woori.wooriLog.domain.blog.controller;
 
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogCreateRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.service.BlogService;
@@ -44,5 +45,10 @@ public class BlogController {
     ) {
         BlogDetailInfoRes res = blogService.getBlogInfo(postId);
         return ApiResponseUtil.success(SuccessCode.OK, res);
+    }
+
+    @PutMapping("/blog/{postId}/{userId}")
+    public ResponseEntity<BaseResponse<?>> updateBlog(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId, @RequestBody BlogUpdateReq request){
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.updateBlog(userId, postId, request));
     }
 }

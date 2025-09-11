@@ -1,6 +1,7 @@
 package dev.woori.wooriLog.domain.blog.entity;
 
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.project.entity.Project;
@@ -66,6 +67,13 @@ public class Blog extends BaseEntity {
                 .build();
         blog.addProgresses(progresses);
         return blog;
+    }
+
+    public void update(BlogUpdateReq request) {
+        this.title = request.title();
+        this.category = request.category();
+        this.tags = request.tags();
+        this.document = request.document();
     }
 
     private void addProgress(Progress p) {
