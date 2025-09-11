@@ -6,6 +6,7 @@ import dev.woori.wooriLog.domain.blog.entity.Progress;
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -16,7 +17,9 @@ public record BlogBasicInfoRes(
         String authorName,
         Category category,
         List<String> tags,
-        List<ProgressDto> progresses
+        List<ProgressDto> progresses,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
     public static BlogBasicInfoRes create(Blog blog) {
         return BlogBasicInfoRes.builder()
@@ -27,6 +30,8 @@ public record BlogBasicInfoRes(
                 .category(blog.getCategory())
                 .tags(blog.getTags())
                 .progresses(transProgressDtos(blog.getProgresses()))
+                .createdAt(blog.getCreatedAt())
+                .updatedAt(blog.getUpdatedAt())
                 .build();
     }
 
