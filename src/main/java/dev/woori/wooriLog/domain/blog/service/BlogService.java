@@ -146,8 +146,8 @@ public class BlogService {
      */
     @Transactional
     public void deleteBlog(Long userId, Long blogId) {
-        findBlogAndCheckOwnerShip(userId, blogId);
-        blogRepository.deleteById(blogId);
+        Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
+        blogRepository.delete(blog);
         log.info("[Blog Service] Delete Blog : blogId={}", blogId);
     }
 
