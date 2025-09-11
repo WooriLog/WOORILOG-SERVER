@@ -11,6 +11,7 @@ import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -98,6 +99,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<?>> handleIllegalArgumentException(final IllegalArgumentException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_ILLEGALARGUMENTS);
+    }
+
+    /**
+     * 401 - AccessDeniedException
+     * 예외 내용: 사용자가 허가되지 않은 자원에 접근할 때 발생
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<BaseResponse<?>> handleAccessDeniedException(final AccessDeniedException e) {
+        logWarn(e);
+        return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED);
     }
 
     /**
