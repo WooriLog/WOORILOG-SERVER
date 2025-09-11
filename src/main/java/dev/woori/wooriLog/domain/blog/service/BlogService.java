@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
@@ -72,16 +73,18 @@ public class BlogService {
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes getBlogInfo(Long postId) {
+    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
         log.info("[Blog Service] Get Blog Info : blogId={}", postId);
-
+        log.info("{}", memberId);
         Blog blog = blogRepository.findBlogByIdWithDetails(postId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
 
         Project project = blog.getProject();
         Member author = blog.getMember();
+        boolean isAuthor = checkAuthor(memberId, author.getId());
 
         return BlogDetailInfoRes.create(
+                isAuthor,
                 BlogDto.create(blog),
                 createBlogProjectDTO(project, author),
                 MemberInfoDto.create(author)
@@ -116,5 +119,16 @@ public class BlogService {
                 .toList();
 
         return BlogProjectDto.create(project, memberList);
+    }
+
+    /**
+     * 글의 작성자인지 확인하는 메서드
+     * @param memberId 조회한 유저의 memberId
+     * @param authorId 작성자의 memberId
+     * @return boolean 조회한 클라이언트가 작성자인지 여부
+     */
+    private static boolean checkAuthor(Optional<Long> memberId, Long authorId) {
+        log.info("memberId={} authorId={}", memberId, authorId);
+        return memberId.filter(id -> id == authorId).isPresent();
     }
 }

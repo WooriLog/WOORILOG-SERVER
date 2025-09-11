@@ -10,10 +10,14 @@ import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -40,9 +44,10 @@ public class BlogController {
 
     @GetMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> getBlogInfo(
+            @UserId Optional<Long> userId,
             @PathVariable("postId") Long postId
     ) {
-        BlogDetailInfoRes res = blogService.getBlogInfo(postId);
+        BlogDetailInfoRes res = blogService.getBlogInfo(userId, postId);
         return ApiResponseUtil.success(SuccessCode.OK, res);
     }
 }
