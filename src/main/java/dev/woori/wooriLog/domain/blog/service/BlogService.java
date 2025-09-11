@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
@@ -74,16 +75,17 @@ public class BlogService {
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes getBlogInfo(Long postId) {
+    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
         log.info("[Blog Service] Get Blog Info : blogId={}", postId);
-
         Blog blog = blogRepository.findBlogByIdWithDetails(postId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
 
         Project project = blog.getProject();
         Member author = blog.getMember();
+        boolean isAuthor = checkAuthor(memberId, author.getId());
 
         return BlogDetailInfoRes.create(
+                isAuthor,
                 BlogDto.create(blog),
                 createBlogProjectDTO(project, author),
                 MemberInfoDto.create(author)
@@ -149,11 +151,27 @@ public class BlogService {
         log.info("[Blog Service] Delete Blog : blogId={}", blogId);
     }
 
+    /**
+     * 블로그 글 id를 통해 블로그 글을 가져오고 글의 작성자인지 확인하는 메서드
+     * @param userId 사용자 id
+     * @param blogId 블로그 id
+     * @return Blog 요청을 보낸 사람이 작성자인 게 확인된 블로그 entity
+     */
     private Blog findBlogAndCheckOwnerShip(Long userId, Long blogId) {
         Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
         if(!blog.getMember().getId().equals(userId)){
             throw new AccessDeniedException(BLOG_ACCESS_DENIED);
         }
         return blog;
+    }
+
+    /**
+     * 글의 작성자인지 확인하는 메서드
+     * @param memberId 조회한 유저의 memberId
+     * @param authorId 작성자의 memberId
+     * @return boolean 조회한 클라이언트가 작성자인지 여부
+     */
+    private static boolean checkAuthor(Optional<Long> memberId, Long authorId) {
+        return memberId.filter(id -> id.equals(authorId)).isPresent();
     }
 }
