@@ -158,7 +158,7 @@ public class BlogService {
      * @return Blog 요청을 보낸 사람이 작성자인 게 확인된 블로그 entity
      */
     private Blog findBlogAndCheckOwnerShip(Long userId, Long blogId) {
-        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+        Blog blog = blogRepository.findByIdWithMember(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
         if(!blog.getMember().getId().equals(userId)){
             throw new AccessDeniedException(BLOG_ACCESS_DENIED);
         }
