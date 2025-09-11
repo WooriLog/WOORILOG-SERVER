@@ -71,8 +71,11 @@ public class Blog extends BaseEntity {
     public void update(BlogCreateOrUpdateReq request, List<Progress> progresses) {
         this.title = request.title();
         this.category = request.category();
-        this.tags = request.tags();
         this.document = request.document();
+        // 태그 초기화 및 업데이트
+        this.tags.clear();
+        this.tags.addAll(request.tags());
+        // Progress 초기화 및 업데이트
         this.progresses.clear();
         addProgresses(progresses);
     }
