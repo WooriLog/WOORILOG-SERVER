@@ -75,7 +75,6 @@ public class BlogService {
     @Transactional
     public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
         log.info("[Blog Service] Get Blog Info : blogId={}", postId);
-        log.info("{}", memberId);
         Blog blog = blogRepository.findBlogByIdWithDetails(postId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
 
@@ -128,7 +127,6 @@ public class BlogService {
      * @return boolean 조회한 클라이언트가 작성자인지 여부
      */
     private static boolean checkAuthor(Optional<Long> memberId, Long authorId) {
-        log.info("memberId={} authorId={}", memberId, authorId);
         return memberId.filter(id -> id == authorId).isPresent();
     }
 }
