@@ -47,8 +47,8 @@ public class BlogController {
         return ApiResponseUtil.success(SuccessCode.OK, res);
     }
 
-    @PutMapping("/blog/{postId}/{userId}")
-    public ResponseEntity<BaseResponse<?>> updateBlog(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId, @RequestBody BlogUpdateReq request){
+    @PutMapping("/blog/{postId}")
+    public ResponseEntity<BaseResponse<?>> updateBlog(@UserId Long userId, @PathVariable("postId") Long postId, @RequestBody BlogUpdateReq request){
         return ApiResponseUtil.success(SuccessCode.OK, blogService.updateBlog(userId, postId, request));
     }
 }
