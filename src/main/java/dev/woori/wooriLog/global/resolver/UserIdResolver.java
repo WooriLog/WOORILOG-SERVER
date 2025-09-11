@@ -30,9 +30,9 @@ public class UserIdResolver implements HandlerMethodArgumentResolver {
                                   WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        boolean authenticated = authentication.isAuthenticated()
-                && !(authentication instanceof AnonymousAuthenticationToken)
-                && authentication != null;
+        boolean authenticated = authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken);
 
         Long userId = authenticated
                 ? (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal()
@@ -43,6 +43,6 @@ public class UserIdResolver implements HandlerMethodArgumentResolver {
             return Optional.ofNullable(userId);
         }
 
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userId;
     }
 }

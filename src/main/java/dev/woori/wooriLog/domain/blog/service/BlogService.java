@@ -127,6 +127,6 @@ public class BlogService {
      * @return boolean 조회한 클라이언트가 작성자인지 여부
      */
     private static boolean checkAuthor(Optional<Long> memberId, Long authorId) {
-        return memberId.filter(id -> id == authorId).isPresent();
+        return memberId.filter(id -> id.equals(authorId)).isPresent();
     }
 }
