@@ -122,33 +122,38 @@ public class BlogService {
 
     /**
      * 블로그 id와 수정된 블로그 포스팅 정보를 통해 블로그 글을 수정
+     * 블로그 글 작성자 id와 요청을 보낸 사용자 id가 일치하지 않으면 예외 발생
+     * @param userId 사용자 id
      * @param blogId 블로그 id
      * @param request 블로그 수정 폼에 담긴 내용들
      * @return blogId 블로그 id
      */
     @Transactional
     public Long updateBlog(Long userId, Long blogId, BlogUpdateReq request) {
-        Blog blog = findBlogById(blogId);
-        if(!blog.getMember().getId().equals(userId)){
-            throw new AccessDeniedException(BLOG_ACCESS_DENIED);
-        }
+        Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
         blog.update(request);
         log.info("[Blog Service] Update Blog : blogId={}", blogId);
         return blogId;
     }
 
+    /**
+     * 블로그 id를 받아와 해당 블로그 글을 삭제
+     * 블로그 글 작성자 id와 요청을 보낸 사용자 id가 일치하지 않으면 예외 발생
+     * @param userId 사용자 id
+     * @param blogId 블로그 id
+     */
     @Transactional
-    public boolean deleteBlog(Long userId, Long blogId) {
-        Blog blog = findBlogById(blogId);
+    public void deleteBlog(Long userId, Long blogId) {
+        findBlogAndCheckOwnerShip(userId, blogId);
+        blogRepository.deleteById(blogId);
+        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
+    }
+
+    private Blog findBlogAndCheckOwnerShip(Long userId, Long blogId) {
+        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
         if(!blog.getMember().getId().equals(userId)){
             throw new AccessDeniedException(BLOG_ACCESS_DENIED);
         }
-        blogRepository.deleteById(blogId);
-        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
-        return true;
-    }
-
-    private Blog findBlogById(Long blogId) {
-        return blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+        return blog;
     }
 }

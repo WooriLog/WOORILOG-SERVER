@@ -48,12 +48,13 @@ public class BlogController {
     }
 
     @PutMapping("/blog/{postId}")
-    public ResponseEntity<BaseResponse<?>> updateBlog(@UserId Long userId, @PathVariable("postId") Long postId, @RequestBody BlogUpdateReq request){
+    public ResponseEntity<BaseResponse<?>> updateBlog(@UserId Long userId, @PathVariable("postId") Long postId, @Valid @RequestBody BlogUpdateReq request){
         return ApiResponseUtil.success(SuccessCode.OK, blogService.updateBlog(userId, postId, request));
     }
 
     @DeleteMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> deleteBlog(@UserId Long userId, @PathVariable("postId") Long postId) {
-        return ApiResponseUtil.success(SuccessCode.OK, blogService.deleteBlog(userId, postId));
+        blogService.deleteBlog(userId, postId);
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

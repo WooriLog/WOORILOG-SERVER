@@ -102,16 +102,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 401 - AccessDeniedException
-     * 예외 내용: 사용자가 허가되지 않은 자원에 접근할 때 발생
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<BaseResponse<?>> handleAccessDeniedException(final AccessDeniedException e) {
-        logWarn(e);
-        return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED);
-    }
-
-    /**
      * 40101 - UnEnrolledException
      * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
      */
@@ -139,6 +129,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenExpiredException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.EXPIRED_TOKEN);
+    }
+
+    /**
+     * 403 - AccessDeniedException
+     * 예외 내용: 사용자가 허가되지 않은 자원에 접근할 때 발생
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<BaseResponse<?>> handleAccessDeniedException(final AccessDeniedException e) {
+        logWarn(e);
+        return ApiResponseUtil.failure(ErrorBaseCode.FORBIDDEN, e.getMessage());
     }
 
     /**
