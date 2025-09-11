@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Category {
-    BLOG("블로그"),
     CHECKPOINT("체크포인트"),
-    REVIEW("리뷰"),
-    TECH("기술/딥다이브");
+    REVIEW("회고"),
+    TROUBLESHOOTING("트러블슈팅"),
+    DEEPDIVE("딥다이브"),
+    ETC("기타");
 
     private final String value;
 
