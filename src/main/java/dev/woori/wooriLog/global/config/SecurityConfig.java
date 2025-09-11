@@ -54,7 +54,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
                             .requestMatchers(whiteList.toArray(new String[0])).permitAll()
                             .anyRequest().authenticated()
                     )
-                    .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, whiteList), UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                     .build();
         }
