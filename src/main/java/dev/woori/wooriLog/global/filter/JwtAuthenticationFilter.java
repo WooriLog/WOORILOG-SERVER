@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -24,6 +25,7 @@ import static dev.woori.wooriLog.global.auth.jwt.TokenAuthentication.createToken
 /**
  * SpringSecurity FilterChain에 추가할 JWT 관련 Filter
  */
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -44,8 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 화이트리스트 URI의 경우 통과
         if (isPermitAll) {
             if (accessToken != null) {
-                final long userId = jwtProvider.getUserIdFromClaims(accessToken);
-                doAuthentication(accessToken, userId);
+                try {
+                    final long userId = jwtProvider.getUserIdFromClaims(accessToken);
+                    doAuthentication(accessToken, userId);
+                } catch (JwtTokenException e) {
+                    // 유효하지 않은 토큰의 경우 catch문에 잡혀 Authentication을 생성하지 않음
+                    log.warn("[JwtAuthenticationFilter] Invalid JwtToken from Anonymous User", e);
+                }
             }
             filterChain.doFilter(request, response);
             return;

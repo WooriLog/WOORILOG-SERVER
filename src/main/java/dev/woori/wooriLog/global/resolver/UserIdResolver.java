@@ -35,7 +35,7 @@ public class UserIdResolver implements HandlerMethodArgumentResolver {
                 && !(authentication instanceof AnonymousAuthenticationToken);
 
         Long userId = authenticated
-                ? (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+                ? (Long) authentication.getPrincipal()
                 : null;
 
         // 익명 사용자
