@@ -1,7 +1,6 @@
 package dev.woori.wooriLog.domain.blog.entity;
 
-import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
-import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateOrUpdateReq;
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.project.entity.Project;
@@ -56,7 +55,7 @@ public class Blog extends BaseEntity {
     @Builder.Default
     private List<Progress> progresses = new ArrayList<>();
 
-    public static Blog create(Project project, Member member, BlogCreateReq request, List<Progress> progresses) {
+    public static Blog create(Project project, Member member, BlogCreateOrUpdateReq request, List<Progress> progresses) {
         Blog blog = Blog.builder()
                 .document(request.document())
                 .title(request.title())
@@ -69,11 +68,13 @@ public class Blog extends BaseEntity {
         return blog;
     }
 
-    public void update(BlogUpdateReq request) {
+    public void update(BlogCreateOrUpdateReq request, List<Progress> progresses) {
         this.title = request.title();
         this.category = request.category();
         this.tags = request.tags();
         this.document = request.document();
+        this.progresses.clear();
+        addProgresses(progresses);
     }
 
     private void addProgress(Progress p) {

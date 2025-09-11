@@ -2,7 +2,7 @@ package dev.woori.wooriLog.domain.blog.service;
 
 
 import dev.woori.wooriLog.domain.blog.dto.*;
-import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateOrUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogBasicInfoRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
@@ -44,7 +44,7 @@ public class BlogService {
      * @param request 새로운 글의 데이터가 담긴 request
      */
     @Transactional
-    public Long createBlog(Long projectId, Long userId, BlogCreateReq request) {
+    public Long createBlog(Long projectId, Long userId, BlogCreateOrUpdateReq request) {
         log.info("[Blog Service] Create Blog : projectId={}, userId={}", projectId, userId);
         // 프로젝트-멤버 관계 조회
         ProjectMember projectMember = projectMemberRepository.findWithMemberAndProjectByIds(projectId, userId)
@@ -131,9 +131,13 @@ public class BlogService {
      * @return blogId 블로그 id
      */
     @Transactional
-    public Long updateBlog(Long userId, Long blogId, BlogUpdateReq request) {
+    public Long updateBlog(Long userId, Long blogId, BlogCreateOrUpdateReq request) {
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
-        blog.update(request);
+        List<Progress> progresses = request.progresses().stream()
+                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
+                .map(Progress::create)
+                .toList();
+        blog.update(request, progresses);
         log.info("[Blog Service] Update Blog : blogId={}", blogId);
         return blogId;
     }
