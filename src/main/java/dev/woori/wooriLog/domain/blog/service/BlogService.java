@@ -3,7 +3,6 @@ package dev.woori.wooriLog.domain.blog.service;
 
 import dev.woori.wooriLog.domain.blog.dto.*;
 import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateOrUpdateReq;
-import dev.woori.wooriLog.domain.blog.dto.request.BlogUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogBasicInfoRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
@@ -51,10 +50,7 @@ public class BlogService {
                 .orElseThrow(() -> new EntityNotFoundException(RELATION_NOT_FOUND));
 
         // Progress Entity 생성
-        List<Progress> progresses = request.progresses().stream()
-                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
-                .map(Progress::create)
-                .toList();
+        List<Progress> progresses = filterAndCreateProgress(request);
 
         // Blog Entity 생성
         Blog createdBlog = Blog.create(
@@ -132,13 +128,10 @@ public class BlogService {
      */
     @Transactional
     public Long updateBlog(Long userId, Long blogId, BlogCreateOrUpdateReq request) {
-        Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
-        List<Progress> progresses = request.progresses().stream()
-                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
-                .map(Progress::create)
-                .toList();
-        blog.update(request, progresses);
         log.info("[Blog Service] Update Blog : blogId={}", blogId);
+        Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
+        List<Progress> progresses = filterAndCreateProgress(request);
+        blog.update(request, progresses);
         return blogId;
     }
 
@@ -150,9 +143,9 @@ public class BlogService {
      */
     @Transactional
     public void deleteBlog(Long userId, Long blogId) {
+        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
         blogRepository.delete(blog);
-        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
     }
 
     /**
@@ -163,7 +156,7 @@ public class BlogService {
      */
     private Blog findBlogAndCheckOwnerShip(Long userId, Long blogId) {
         Blog blog = blogRepository.findByIdWithMember(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
-        if(!blog.getMember().getId().equals(userId)){
+        if (!blog.getMember().getId().equals(userId)) {
             throw new AccessDeniedException(BLOG_ACCESS_DENIED);
         }
         return blog;
@@ -177,5 +170,12 @@ public class BlogService {
      */
     private static boolean checkAuthor(Optional<Long> memberId, Long authorId) {
         return memberId.filter(id -> id.equals(authorId)).isPresent();
+    }
+
+    private static List<Progress> filterAndCreateProgress(BlogCreateOrUpdateReq request) {
+        return request.progresses().stream()
+                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
+                .map(Progress::create)
+                .toList();
     }
 }
