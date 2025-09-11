@@ -17,6 +17,7 @@ import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -128,12 +129,27 @@ public class BlogService {
      */
     @Transactional
     public Long updateBlog(Long userId, Long blogId, BlogUpdateReq request) {
-        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+        Blog blog = findBlogById(blogId);
         if(!blog.getMember().getId().equals(userId)){
             throw new AccessDeniedException(BLOG_ACCESS_DENIED);
         }
         blog.update(request);
         log.info("[Blog Service] Update Blog : blogId={}", blogId);
         return blogId;
+    }
+
+    @Transactional
+    public boolean deleteBlog(Long userId, Long blogId) {
+        Blog blog = findBlogById(blogId);
+        if(!blog.getMember().getId().equals(userId)){
+            throw new AccessDeniedException(BLOG_ACCESS_DENIED);
+        }
+        blogRepository.deleteById(blogId);
+        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
+        return true;
+    }
+
+    private Blog findBlogById(Long blogId) {
+        return blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
     }
 }

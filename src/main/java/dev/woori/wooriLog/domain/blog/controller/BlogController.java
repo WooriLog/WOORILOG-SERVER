@@ -51,4 +51,9 @@ public class BlogController {
     public ResponseEntity<BaseResponse<?>> updateBlog(@UserId Long userId, @PathVariable("postId") Long postId, @RequestBody BlogUpdateReq request){
         return ApiResponseUtil.success(SuccessCode.OK, blogService.updateBlog(userId, postId, request));
     }
+
+    @DeleteMapping("/blog/{postId}")
+    public ResponseEntity<BaseResponse<?>> deleteBlog(@UserId Long userId, @PathVariable("postId") Long postId) {
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.deleteBlog(userId, postId));
+    }
 }
