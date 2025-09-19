@@ -33,6 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final List<String> whiteList;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
+    private static final List<String> DENY_URL = List.of(
+            "/api/projects/list"
+    );
+
+    private static final List<String> PERMIT_URL = List.of(
+            "/api/projects/*",
+            "/api/blog/*"
+    );
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // CORS preflight 스킵
@@ -85,13 +94,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
 
         if ("GET".equalsIgnoreCase(request.getMethod())) {
-            if (pathMatcher.match("/api/projects/list", uri)) {
+            // DENY_URL 리스트에 존재하는 URL 요청일 경우 거부
+            if (DENY_URL.stream().anyMatch(deny -> pathMatcher.match(deny, uri))) {
                 return false;
             }
-            if (pathMatcher.match("/api/projects/*", uri) || pathMatcher.match("/api/blog/*", uri)) {
+            // PERMIT_URL 리스트에 존재하는 URL 요청일 경우 허용
+            if (PERMIT_URL.stream().anyMatch(permit -> pathMatcher.match(permit, uri))) {
                 return true;
             }
         }
+        // DENY_URL, PERMIT_URL 외의 WhiteList URL들의 경우엔 허용
         return whiteList.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
     }
 }
