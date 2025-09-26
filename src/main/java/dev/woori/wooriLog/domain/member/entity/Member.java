@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Getter
@@ -34,14 +35,8 @@ public class Member extends BaseEntity {
 
     private String introduce;
 
-    public static Member create(String email, String name, String provider, String socialId) {
-        return Member.builder()
-                .email(email)
-                .name(name)
-                .provider(provider)
-                .socialId(socialId)
-                .build();
-    }
+    @Column(length = 2048)
+    private String profileUrl;
 
     public static Member create(GoogleUserInfoRes userInfo, GoogleEnrollReq req, String provider) {
         return Member.builder()
@@ -50,6 +45,7 @@ public class Member extends BaseEntity {
                 .provider(provider)
                 .socialId(userInfo.sub())
                 .introduce(req.introduce())
+                .profileUrl(userInfo.picture())
                 .build();
     }
 
@@ -60,5 +56,11 @@ public class Member extends BaseEntity {
 
     public void updateSocialId (String socialId) {
         this.socialId = socialId;
+    }
+
+    public void checkProfile(String picture) {
+        if (this.profileUrl == null || !this.profileUrl.equals(picture)) {
+            this.profileUrl = picture;
+        }
     }
 }
