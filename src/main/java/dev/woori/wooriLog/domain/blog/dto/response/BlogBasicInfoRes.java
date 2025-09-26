@@ -4,6 +4,7 @@ import dev.woori.wooriLog.domain.blog.dto.request.ProgressDto;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.entity.Progress;
 import dev.woori.wooriLog.domain.blog.enums.Category;
+import dev.woori.wooriLog.domain.member.entity.Member;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public record BlogBasicInfoRes(
         String title,
         String projectName,
         String authorName,
+        String authorProfileUrl,
         Category category,
         List<String> tags,
         List<ProgressDto> progresses,
@@ -22,11 +24,14 @@ public record BlogBasicInfoRes(
         LocalDateTime updatedAt
 ) {
     public static BlogBasicInfoRes create(Blog blog) {
+        Member author = blog.getMember();
+
         return BlogBasicInfoRes.builder()
                 .blogId(blog.getId())
                 .title(blog.getTitle())
                 .projectName(blog.getProject().getProjectName())
-                .authorName(blog.getMember().getName())
+                .authorName(author.getName())
+                .authorProfileUrl(author.getProfileUrl())
                 .category(blog.getCategory())
                 .tags(blog.getTags())
                 .progresses(transProgressDtos(blog.getProgresses()))

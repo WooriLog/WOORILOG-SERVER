@@ -11,25 +11,23 @@ import java.util.List;
 
 @Builder
 public record ProfileDto(
-        Long userId,
-        String email,
-        String name,
-        String introduce,
+        MemberInfoDto member,
         List<BlogSummaryDto> blogList,
         List<ProjectBasicInfoDto> projectList
 ) {
     public static ProfileDto create(Member member, List<Blog> blogs, List<Project> projects) {
+        MemberInfoDto memberInfoDto = MemberInfoDto.create(member);
+
         List<BlogSummaryDto> blogSummaryDtos = blogs.stream()
                 .map(BlogSummaryDto::create)
                 .toList();
+
         List<ProjectBasicInfoDto> projectBasicInfoDtos = projects.stream()
                 .map(ProjectBasicInfoDto::create)
                 .toList();
+
         return ProfileDto.builder()
-                .userId(member.getId())
-                .email(member.getEmail())
-                .name(member.getName())
-                .introduce(member.getIntroduce())
+                .member(memberInfoDto)
                 .blogList(blogSummaryDtos)
                 .projectList(projectBasicInfoDtos)
                 .build();
