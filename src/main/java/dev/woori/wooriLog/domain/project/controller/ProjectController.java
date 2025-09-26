@@ -19,11 +19,13 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    // 최신 5개의 프로젝트 조회 (홈화면)
     @GetMapping("/home")
     public ResponseEntity<BaseResponse<?>> getHomeProjectInfos() {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectBasicInfos());
     }
 
+    // 프로젝트 생성
     @PostMapping
     public ResponseEntity<BaseResponse<?>> createProject(
             @UserId Long leaderId,
@@ -35,11 +37,13 @@ public class ProjectController {
         );
     }
 
+    // 프로젝트 조회
     @GetMapping("/{projectId}")
     public ResponseEntity<BaseResponse<?>> getProjectInfo(@PathVariable Long projectId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectInfo(projectId));
     }
 
+    // 프로젝트 가입 목록 조회 (유저)
     @GetMapping("/list")
     public ResponseEntity<BaseResponse<?>> getProjectList(@UserId Long memberId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectListByMemberId(memberId));
