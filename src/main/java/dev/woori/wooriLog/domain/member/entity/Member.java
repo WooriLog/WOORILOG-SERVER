@@ -9,7 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -59,7 +59,7 @@ public class Member extends BaseEntity {
     }
 
     public void checkProfile(String picture) {
-        if (this.profileUrl == null || !this.profileUrl.equals(picture)) {
+        if (!Objects.equals(this.profileUrl, picture)) {
             this.profileUrl = picture;
         }
     }
