@@ -25,11 +25,13 @@ public class BlogController {
 
     private final BlogService blogService;
 
+    // 최신 5개의 블로그 조회 (홈화면)
     @GetMapping("/blog/home")
     public ResponseEntity<BaseResponse<?>> getHomeBlogInfos() {
         return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogBasicInfos());
     }
 
+    // 블로그 작성
     @PostMapping("/blog/{projectId}")
     public ResponseEntity<BaseResponse<?>> createBlog(
             @PathVariable("projectId") Long projectId,
@@ -42,6 +44,7 @@ public class BlogController {
         );
     }
 
+    // 블로그 조회
     @GetMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> getBlogInfo(
             @UserId Optional<Long> userId,
@@ -51,11 +54,13 @@ public class BlogController {
         return ApiResponseUtil.success(SuccessCode.OK, res);
     }
 
+    // 블로그 수정
     @PutMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> updateBlog(@UserId Long userId, @PathVariable("postId") Long postId, @Valid @RequestBody BlogCreateOrUpdateReq request){
         return ApiResponseUtil.success(SuccessCode.OK, blogService.updateBlog(userId, postId, request));
     }
 
+    // 블로그 삭제
     @DeleteMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> deleteBlog(@UserId Long userId, @PathVariable("postId") Long postId) {
         blogService.deleteBlog(userId, postId);

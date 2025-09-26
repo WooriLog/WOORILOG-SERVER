@@ -42,6 +42,9 @@ public class GoogleOAuthService {
         Member member = memberRepository.findByProviderAndSocialId(Constants.GOOGLE, userInfo.sub()) // 소셜 ID를 통한 유저 조회
                 .orElseThrow(() -> new UnEnrolledException(googleToken.access_token()));
 
+        // 프로필 이미지 변경시 변경사항 적용
+        member.checkProfile(userInfo.picture());
+
         // JWT Token 발급
         Token token = jwtProvider.issueToken(member.getId());
 
