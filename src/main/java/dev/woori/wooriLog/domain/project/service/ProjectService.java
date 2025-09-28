@@ -130,10 +130,11 @@ public class ProjectService {
      * @param projectId 삭제할 프로젝트 ID
      * @param leaderId 요청 유저 ID
      */
+    @Transactional
     public void deleteProject(Long projectId, Long leaderId) {
         Project project = findProjectBy(projectId);
         // TODO : Spring Interceptor를 적용하여 추후 분리
-        checkAccessPermission(project, leaderId, LEADER);
+        checkAccessPermission(project, leaderId);
         List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
         projectMemberRepository.deleteAll(projectMembers);
         projectRepository.delete(project);
@@ -142,17 +143,18 @@ public class ProjectService {
     /**
      * 프로젝트 멤버 추가
      * @param projectId 프로젝트 ID
-     * @param memberId 요청 유저 ID
-     * @param userId 프로젝트에 추가할 유저 ID
+     * @param leaderId 요청 유저 ID
+     * @param memberId 프로젝트에 추가할 유저 ID
      */
-    public void addProjectMember(Long projectId, Long memberId, Long userId) {
+    @Transactional
+    public void addProjectMember(Long projectId, Long leaderId, Long memberId) {
         Project project = findProjectBy(projectId);
-        Member requestMember = findMemberBy(userId);
+        Member requestMember = findMemberBy(memberId);
         if (isExistsByMemberAndProject(requestMember, project)) {
             throw new IllegalArgumentException(DUPLICATED_REQUEST);
         }
         // TODO : Spring Interceptor를 적용하여 추후 분리
-        checkAccessPermission(project, memberId, LEADER);
+        checkAccessPermission(project, leaderId);
         projectMemberRepository.save(ProjectMember.of(requestMember, project, MEMBER));
     }
 
@@ -162,13 +164,14 @@ public class ProjectService {
      * @param leaderId 요청 유저 ID
      * @param userId 프로젝트에서 제거할 유저 ID
      */
+    @Transactional
     public void deleteProjectMember(Long projectId, Long leaderId, Long userId) {
         Project project = findProjectBy(projectId);
         Member deleteMember = findMemberBy(userId);
         if (!isExistsByMemberAndProject(deleteMember, project)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(RELATION_NOT_FOUND);
         }
-        checkAccessPermission(project, leaderId, null);
+        checkAccessPermission(project, leaderId);
         ProjectMember pm = projectMemberRepository.findByProjectAndMember_Id(project, userId);
         projectMemberRepository.delete(pm);
     }
@@ -220,11 +223,8 @@ public class ProjectService {
         return projectMemberRepository.existsByMemberAndProject(deleteMember, project);
     }
 
-    private void checkAccessPermission(Project project, Long memberId, String role) {
-        if (role == null && projectMemberRepository.existsByMemberIdAndProject(memberId, project)) {
-            throw new AccessDeniedException(ACCESS_DENIED);
-        }
-        if (!projectMemberRepository.isCorrectRole(project, memberId, role)) {
+    private void checkAccessPermission(Project project, Long memberId) {
+        if (!projectMemberRepository.existsByProjectAndMemberIdAndRole(project, memberId, LEADER)) {
             throw new AccessDeniedException(ACCESS_DENIED);
         }
     }

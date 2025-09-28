@@ -60,10 +60,10 @@ public class ProjectController {
     @PostMapping("/{projectId}/members/{memberId}")
     public ResponseEntity<BaseResponse<?>> addProjectMember(
             @PathVariable Long projectId,
-            @UserId Long memberId,
-            Long userId
+            @UserId Long leaderId,
+            @PathVariable Long memberId
     ) {
-        projectService.addProjectMember(projectId, memberId, userId);
+        projectService.addProjectMember(projectId, leaderId, memberId);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
@@ -72,7 +72,7 @@ public class ProjectController {
     public ResponseEntity<BaseResponse<?>> deleteProjectMember(
             @PathVariable Long projectId,
             @UserId Long leaderId,
-            Long memberId
+            @PathVariable Long memberId
     ) {
         projectService.deleteProjectMember(projectId, leaderId, memberId);
         return ApiResponseUtil.success(SuccessCode.OK);

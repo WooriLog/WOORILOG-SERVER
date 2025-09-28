@@ -34,8 +34,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     ProjectMember findByProjectAndMember_Id(Project project, Long memberId);
 
-    @Query("SELECT pm.role =: role FROM ProjectMember pm WHERE pm.project =: project AND pm.member.id =: meberId")
-    boolean isCorrectRole(Project project, Long memberId, String role);
+    boolean existsByProjectAndMemberIdAndRole(Project project, Long memberId, String role);
 
     boolean existsByMemberIdAndProject(Long memberId, Project project);
 
