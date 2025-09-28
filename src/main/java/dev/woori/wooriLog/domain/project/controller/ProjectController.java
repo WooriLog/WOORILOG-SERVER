@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/projects")
 public class ProjectController {
 
     private final ProjectService projectService;
 
-    @GetMapping("/projects/home")
+    @GetMapping("/home")
     public ResponseEntity<BaseResponse<?>> getHomeProjectInfos() {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectBasicInfos());
     }
 
-    @PostMapping("/projects")
+    @PostMapping
     public ResponseEntity<BaseResponse<?>> createProject(
             @UserId Long leaderId,
             @Valid @RequestBody ProjectCreateReq request
@@ -35,13 +35,42 @@ public class ProjectController {
         );
     }
 
-    @GetMapping("/projects/{projectId}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<BaseResponse<?>> getProjectInfo(@PathVariable Long projectId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectInfo(projectId));
     }
 
-    @GetMapping("/projects/list")
+    @GetMapping("/list")
     public ResponseEntity<BaseResponse<?>> getProjectList(@UserId Long memberId) {
         return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectListByMemberId(memberId));
+    }
+
+    // 프로젝트 삭제
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<BaseResponse<?>> deleteProject(@PathVariable Long projectId, @UserId Long memberId) {
+        projectService.deleteProject(projectId, memberId);
+        return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    // 프로젝트 멤버 추가
+    @PostMapping("/{projectId}/members/{memberId}")
+    public ResponseEntity<BaseResponse<?>> addProjectMember(
+            @PathVariable Long projectId,
+            @UserId Long memberId,
+            Long userId
+    ) {
+        projectService.addProjectMember(projectId, memberId, userId);
+        return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    // 프로젝트 멤버 삭제
+    @DeleteMapping("/{projectId}/members/{memberId}")
+    public ResponseEntity<BaseResponse<?>> deleteProjectMember(
+            @PathVariable Long projectId,
+            @UserId Long leaderId,
+            Long memberId
+    ) {
+        projectService.deleteProjectMember(projectId, leaderId, memberId);
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

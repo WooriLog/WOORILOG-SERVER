@@ -29,4 +29,15 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     @Query("SELECT p FROM ProjectMember pm JOIN pm.project p LEFT JOIN FETCH p.techStack WHERE pm.member.id = :memberId")
     List<Project> findByMemberId(@Param("memberId") Long memberId);
+
+    List<ProjectMember> findAllByProject(Project project);
+
+    ProjectMember findByProjectAndMember_Id(Project project, Long memberId);
+
+    @Query("SELECT pm.role =: role FROM ProjectMember pm WHERE pm.project =: project AND pm.member.id =: meberId")
+    boolean isCorrectRole(Project project, Long memberId, String role);
+
+    boolean existsByMemberIdAndProject(Long memberId, Project project);
+
+    boolean existsByMemberAndProject(Member member, Project project);
 }
