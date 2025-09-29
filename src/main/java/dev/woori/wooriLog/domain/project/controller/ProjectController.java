@@ -51,8 +51,8 @@ public class ProjectController {
 
     // 프로젝트 삭제
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<BaseResponse<?>> deleteProject(@PathVariable Long projectId, @UserId Long memberId) {
-        projectService.deleteProject(projectId, memberId);
+    public ResponseEntity<BaseResponse<?>> deleteProject(@PathVariable Long projectId, @UserId Long leaderId) {
+        projectService.deleteProject(projectId, leaderId);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 

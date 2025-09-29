@@ -32,11 +32,9 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     List<ProjectMember> findAllByProject(Project project);
 
-    ProjectMember findByProjectAndMember_Id(Project project, Long memberId);
+    boolean existsByProjectIdAndMemberIdAndRole(Long projectId, Long memberId, String role);
 
-    boolean existsByProjectAndMemberIdAndRole(Project project, Long memberId, String role);
+    boolean existsByMemberIdAndProjectId(Long memberId, Long projectId);
 
-    boolean existsByMemberIdAndProject(Long memberId, Project project);
-
-    boolean existsByMemberAndProject(Member member, Project project);
+    Optional<ProjectMember> findByProject_IdAndMember_Id(Long projectId, Long memberId);
 }
