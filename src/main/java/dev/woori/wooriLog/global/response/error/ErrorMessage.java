@@ -3,6 +3,11 @@ package dev.woori.wooriLog.global.response.error;
 public abstract class ErrorMessage {
 
     /**
+     * BAD REQUEST
+     */
+    public static final String LEADER_CAN_NOT_DELETE = "팀장을 프로젝트에서 삭제할 수 없습니다.";
+
+    /**
      * NOT FOUND - 조회 실패
      */
     public static final String USER_NOT_FOUND = "해당 유저를 찾을 수 없습니다.";

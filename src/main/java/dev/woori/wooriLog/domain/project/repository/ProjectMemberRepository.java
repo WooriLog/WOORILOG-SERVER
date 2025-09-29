@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
-    List<ProjectMember> findByProject(Project project);
 
     @Query("SELECT pm.member FROM ProjectMember pm WHERE pm.project = :project")
     List<Member> findMembersByProject(@Param("project") Project project);

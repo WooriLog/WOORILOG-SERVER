@@ -167,6 +167,9 @@ public class ProjectService {
     @Transactional
     public void deleteProjectMember(Long projectId, Long leaderId, Long memberId) {
         checkAccessPermission(projectId, leaderId);
+        if (memberId.equals(leaderId)) {
+            throw new IllegalArgumentException(LEADER_CAN_NOT_DELETE);
+        }
         ProjectMember projectMember = projectMemberRepository.findByProject_IdAndMember_Id(projectId, memberId)
                 .orElseThrow(() -> new EntityNotFoundException(RELATION_NOT_FOUND));
         projectMemberRepository.delete(projectMember);
