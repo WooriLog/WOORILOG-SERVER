@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
-    List<ProjectMember> findByProject(Project project);
 
     @Query("SELECT pm.member FROM ProjectMember pm WHERE pm.project = :project")
     List<Member> findMembersByProject(@Param("project") Project project);
@@ -29,4 +28,12 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Lo
 
     @Query("SELECT p FROM ProjectMember pm JOIN pm.project p LEFT JOIN FETCH p.techStack WHERE pm.member.id = :memberId")
     List<Project> findByMemberId(@Param("memberId") Long memberId);
+
+    List<ProjectMember> findAllByProject(Project project);
+
+    boolean existsByProjectIdAndMemberIdAndRole(Long projectId, Long memberId, String role);
+
+    boolean existsByMemberIdAndProjectId(Long memberId, Long projectId);
+
+    Optional<ProjectMember> findByProject_IdAndMember_Id(Long projectId, Long memberId);
 }

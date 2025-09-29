@@ -1,6 +1,6 @@
 package dev.woori.wooriLog.domain.blog.controller;
 
-import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateOrUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogCreateRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.service.BlogService;
@@ -10,10 +10,14 @@ import dev.woori.wooriLog.global.response.BaseResponse;
 import dev.woori.wooriLog.global.response.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 
+
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -21,16 +25,18 @@ public class BlogController {
 
     private final BlogService blogService;
 
+    // 최신 5개의 블로그 조회 (홈화면)
     @GetMapping("/blog/home")
     public ResponseEntity<BaseResponse<?>> getHomeBlogInfos() {
         return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogBasicInfos());
     }
 
+    // 블로그 작성
     @PostMapping("/blog/{projectId}")
     public ResponseEntity<BaseResponse<?>> createBlog(
             @PathVariable("projectId") Long projectId,
             @UserId Long userId,
-            @Valid @RequestBody BlogCreateReq request
+            @Valid @RequestBody BlogCreateOrUpdateReq request
     ) {
         return ApiResponseUtil.success(
                 SuccessCode.OK,
@@ -38,11 +44,26 @@ public class BlogController {
         );
     }
 
+    // 블로그 조회
     @GetMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> getBlogInfo(
+            @UserId Optional<Long> userId,
             @PathVariable("postId") Long postId
     ) {
-        BlogDetailInfoRes res = blogService.getBlogInfo(postId);
+        BlogDetailInfoRes res = blogService.getBlogInfo(userId, postId);
         return ApiResponseUtil.success(SuccessCode.OK, res);
+    }
+
+    // 블로그 수정
+    @PutMapping("/blog/{postId}")
+    public ResponseEntity<BaseResponse<?>> updateBlog(@UserId Long userId, @PathVariable("postId") Long postId, @Valid @RequestBody BlogCreateOrUpdateReq request){
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.updateBlog(userId, postId, request));
+    }
+
+    // 블로그 삭제
+    @DeleteMapping("/blog/{postId}")
+    public ResponseEntity<BaseResponse<?>> deleteBlog(@UserId Long userId, @PathVariable("postId") Long postId) {
+        blogService.deleteBlog(userId, postId);
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

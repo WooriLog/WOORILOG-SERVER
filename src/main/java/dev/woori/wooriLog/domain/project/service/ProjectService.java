@@ -19,6 +19,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static dev.woori.wooriLog.domain.DomainConstants.LEADER;
+import static dev.woori.wooriLog.domain.DomainConstants.MEMBER;
 import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
 @Slf4j
@@ -123,6 +125,56 @@ public class ProjectService {
                 .toList();
     }
 
+    /**
+     * 프로젝트 삭제 메서드
+     * @param projectId 삭제할 프로젝트 ID
+     * @param leaderId 요청 유저 ID
+     */
+    @Transactional
+    public void deleteProject(Long projectId, Long leaderId) {
+        Project project = findProjectBy(projectId);
+        // TODO : Spring Interceptor를 적용하여 추후 분리
+        checkAccessPermission(projectId, leaderId);
+        List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
+        projectMemberRepository.deleteAll(projectMembers);
+        projectRepository.delete(project);
+    }
+
+    /**
+     * 프로젝트 멤버 추가
+     * @param projectId 프로젝트 ID
+     * @param leaderId 요청 유저 ID
+     * @param memberId 프로젝트에 추가할 유저 ID
+     */
+    @Transactional
+    public void addProjectMember(Long projectId, Long leaderId, Long memberId) {
+        Project project = findProjectBy(projectId);
+        Member requestMember = findMemberBy(memberId);
+        // TODO : Spring Interceptor를 적용하여 추후 분리
+        checkAccessPermission(projectId, leaderId);
+        if (projectMemberRepository.existsByMemberIdAndProjectId(memberId, projectId)) {
+            throw new IllegalArgumentException(DUPLICATED_REQUEST);
+        }
+        projectMemberRepository.save(ProjectMember.of(requestMember, project, MEMBER));
+    }
+
+    /**
+     * 프로젝트 멤버 삭제
+     * @param projectId 프로젝트 ID
+     * @param leaderId 요청 유저 ID
+     * @param memberId 프로젝트에서 제거할 유저 ID
+     */
+    @Transactional
+    public void deleteProjectMember(Long projectId, Long leaderId, Long memberId) {
+        checkAccessPermission(projectId, leaderId);
+        if (memberId.equals(leaderId)) {
+            throw new IllegalArgumentException(LEADER_CAN_NOT_DELETE);
+        }
+        ProjectMember projectMember = projectMemberRepository.findByProject_IdAndMember_Id(projectId, memberId)
+                .orElseThrow(() -> new EntityNotFoundException(RELATION_NOT_FOUND));
+        projectMemberRepository.delete(projectMember);
+    }
+
     private void addLeaderToProject(Long leaderId, Project project) {
         Member leader = findMemberBy(leaderId);
         projectMemberRepository.save(ProjectMember.of(leader, project, LEADER));
@@ -164,5 +216,11 @@ public class ProjectService {
 
     private Member findMemberBy(Long userId) {
         return memberRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+    }
+
+    private void checkAccessPermission(Long projectId, Long memberId) {
+        if (!projectMemberRepository.existsByProjectIdAndMemberIdAndRole(projectId, memberId, LEADER)) {
+            throw new AccessDeniedException(ACCESS_DENIED);
+        }
     }
 }

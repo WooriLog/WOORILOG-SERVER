@@ -2,7 +2,7 @@ package dev.woori.wooriLog.domain.blog.service;
 
 
 import dev.woori.wooriLog.domain.blog.dto.*;
-import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateReq;
+import dev.woori.wooriLog.domain.blog.dto.request.BlogCreateOrUpdateReq;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogBasicInfoRes;
 import dev.woori.wooriLog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
@@ -17,10 +17,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
@@ -41,17 +43,14 @@ public class BlogService {
      * @param request 새로운 글의 데이터가 담긴 request
      */
     @Transactional
-    public Long createBlog(Long projectId, Long userId, BlogCreateReq request) {
+    public Long createBlog(Long projectId, Long userId, BlogCreateOrUpdateReq request) {
         log.info("[Blog Service] Create Blog : projectId={}, userId={}", projectId, userId);
         // 프로젝트-멤버 관계 조회
         ProjectMember projectMember = projectMemberRepository.findWithMemberAndProjectByIds(projectId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(RELATION_NOT_FOUND));
 
         // Progress Entity 생성
-        List<Progress> progresses = request.progresses().stream()
-                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
-                .map(Progress::create)
-                .toList();
+        List<Progress> progresses = filterAndCreateProgress(request);
 
         // Blog Entity 생성
         Blog createdBlog = Blog.create(
@@ -72,16 +71,17 @@ public class BlogService {
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes getBlogInfo(Long postId) {
+    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
         log.info("[Blog Service] Get Blog Info : blogId={}", postId);
-
         Blog blog = blogRepository.findBlogByIdWithDetails(postId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
 
         Project project = blog.getProject();
         Member author = blog.getMember();
+        boolean isAuthor = checkAuthor(memberId, author.getId());
 
         return BlogDetailInfoRes.create(
+                isAuthor,
                 BlogDto.create(blog),
                 createBlogProjectDTO(project, author),
                 MemberInfoDto.create(author)
@@ -116,5 +116,66 @@ public class BlogService {
                 .toList();
 
         return BlogProjectDto.create(project, memberList);
+    }
+
+    /**
+     * 블로그 id와 수정된 블로그 포스팅 정보를 통해 블로그 글을 수정
+     * 블로그 글 작성자 id와 요청을 보낸 사용자 id가 일치하지 않으면 예외 발생
+     * @param userId 사용자 id
+     * @param blogId 블로그 id
+     * @param request 블로그 수정 폼에 담긴 내용들
+     * @return blogId 블로그 id
+     */
+    @Transactional
+    public Long updateBlog(Long userId, Long blogId, BlogCreateOrUpdateReq request) {
+        log.info("[Blog Service] Update Blog : blogId={}", blogId);
+        Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
+        List<Progress> progresses = filterAndCreateProgress(request);
+        blog.update(request, progresses);
+        return blogId;
+    }
+
+    /**
+     * 블로그 id를 받아와 해당 블로그 글을 삭제
+     * 블로그 글 작성자 id와 요청을 보낸 사용자 id가 일치하지 않으면 예외 발생
+     * @param userId 사용자 id
+     * @param blogId 블로그 id
+     */
+    @Transactional
+    public void deleteBlog(Long userId, Long blogId) {
+        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
+        Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
+        blogRepository.delete(blog);
+    }
+
+    /**
+     * 블로그 글 id를 통해 블로그 글을 가져오고 글의 작성자인지 확인하는 메서드
+     * @param userId 사용자 id
+     * @param blogId 블로그 id
+     * @return Blog 요청을 보낸 사람이 작성자인 게 확인된 블로그 entity
+     */
+    private Blog findBlogAndCheckOwnerShip(Long userId, Long blogId) {
+        Blog blog = blogRepository.findByIdWithMember(blogId).orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+        if (!blog.getMember().getId().equals(userId)) {
+            throw new AccessDeniedException(BLOG_ACCESS_DENIED);
+        }
+        return blog;
+    }
+
+    /**
+     * 글의 작성자인지 확인하는 메서드
+     * @param memberId 조회한 유저의 memberId
+     * @param authorId 작성자의 memberId
+     * @return boolean 조회한 클라이언트가 작성자인지 여부
+     */
+    private static boolean checkAuthor(Optional<Long> memberId, Long authorId) {
+        return memberId.filter(id -> id.equals(authorId)).isPresent();
+    }
+
+    private static List<Progress> filterAndCreateProgress(BlogCreateOrUpdateReq request) {
+        return request.progresses().stream()
+                .filter(progressDto -> progressDto.message() != null && !progressDto.message().isBlank())
+                .map(Progress::create)
+                .toList();
     }
 }
