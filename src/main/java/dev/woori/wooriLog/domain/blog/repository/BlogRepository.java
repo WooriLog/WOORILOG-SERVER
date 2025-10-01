@@ -1,5 +1,6 @@
 package dev.woori.wooriLog.domain.blog.repository;
 
+import dev.woori.wooriLog.domain.blog.dto.ProjectBlogCount;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.enums.Category;
 import dev.woori.wooriLog.domain.project.entity.Project;
@@ -36,6 +37,10 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     )
     List<Blog> findTopOrderByCreatedAtDesc(Pageable pageable);
 
-    @Query("SELECT COUNT(b) FROM Blog b WHERE b.project = :project AND b.category != 'CHECKPOINT'")
-    int countBlogByProjectId(@Param("project") Project project);
+    @Query("SELECT b.project.id as projectId, COUNT(b.id) as blogCount " +
+            "FROM Blog b " +
+            "WHERE b.project IN :projects AND b.category != 'CHECKPOINT' " +
+            "GROUP BY b.project.id"
+    )
+    List<ProjectBlogCount> findBlogCountsByProjects(@Param("projects") List<Project> projects);
 }

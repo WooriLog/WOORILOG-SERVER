@@ -10,12 +10,12 @@ import java.util.List;
 public record ProjectBasicInfoDto(
         Long projectId,
         String projectName,
-        Integer blogCount,
+        Long blogCount,
         List<String> techStack,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static ProjectBasicInfoDto create(Project project, Integer blogCount) {
+    public static ProjectBasicInfoDto create(Project project, Long blogCount) {
         return ProjectBasicInfoDto.builder()
                 .projectId(project.getId())
                 .projectName(project.getProjectName())
