@@ -124,15 +124,12 @@ public class ProjectService {
 
         List<ProjectBlogCount> blogCountsByProjects = blogRepository.findBlogCountsByProjects(topByCreatedAtDesc);
 
-        HashMap<Long, Long> blogCountMap = new HashMap<>();
-        blogCountsByProjects.forEach(projectBlogCount -> {
-            blogCountMap.put(projectBlogCount.projectId(), projectBlogCount.blogCount());
-        });
+        Map<Long, Long> blogCountMap = blogCountsByProjects.stream()
+                .collect(Collectors.toMap(ProjectBlogCount::projectId, ProjectBlogCount::blogCount));
 
         return topByCreatedAtDesc.stream()
                 .map(project -> {
-                    Long blogCount = blogCountMap.get(project.getId());
-                    return ProjectBasicInfoDto.create(project, blogCount);
+                    return ProjectBasicInfoDto.create(project, blogCountMap.getOrDefault(project.getId(), 0L));
                 })
                 .toList();
     }

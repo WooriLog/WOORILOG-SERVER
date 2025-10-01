@@ -39,7 +39,7 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
 
     @Query("SELECT b.project.id as projectId, COUNT(b.id) as blogCount " +
             "FROM Blog b " +
-            "WHERE b.project IN :projects AND b.category != 'CHECKPOINT' " +
+            "WHERE b.project IN :projects AND b.category != dev.woori.wooriLog.domain.blog.enums.Category.CHECKPOINT " +
             "GROUP BY b.project.id"
     )
     List<ProjectBlogCount> findBlogCountsByProjects(@Param("projects") List<Project> projects);
