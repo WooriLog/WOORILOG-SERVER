@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 @Slf4j
@@ -75,6 +76,8 @@ public class GoogleOAuthService {
      * @return GoogleUserInfoRes 구글에서 전달받은 유저정보
      */
     private GoogleUserInfoRes getUserInfo(String accessToken) {
+        if (StringUtils.hasText(accessToken) && !accessToken.startsWith(Constants.BEARER))
+            accessToken = Constants.BEARER + accessToken;
         return feignProvider.getUserInfo(Constants.BEARER + accessToken);
     }
 

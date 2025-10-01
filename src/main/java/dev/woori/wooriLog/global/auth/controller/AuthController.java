@@ -27,8 +27,6 @@ public class AuthController {
             @RequestHeader(name = "Authorization") String googleToken ,
             @Valid  @RequestBody GoogleEnrollReq request
     ) {
-        googleToken = googleToken.startsWith("Bearer ") ?
-                googleToken.replaceFirst("Bearer ", "") : googleToken;
         return ApiResponseUtil.success(SuccessCode.OK, googleOAuthService.enroll(googleToken, request));
     }
 }
