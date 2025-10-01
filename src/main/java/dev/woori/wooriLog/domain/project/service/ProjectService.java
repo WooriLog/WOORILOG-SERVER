@@ -121,7 +121,10 @@ public class ProjectService {
                 projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
 
         return topByCreatedAtDesc.stream()
-                .map(ProjectBasicInfoDto::create)
+                .map(project -> {
+                    int blogCount = blogRepository.countBlogByProjectId(project);
+                    return ProjectBasicInfoDto.create(project, blogCount);
+                })
                 .toList();
     }
 
