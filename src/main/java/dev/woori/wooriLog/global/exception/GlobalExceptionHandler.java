@@ -203,7 +203,6 @@ public class GlobalExceptionHandler {
                     .collect(Collectors.joining("\n"));
             return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, errorMessage);
         }
-        e.printStackTrace();
         return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }
 
