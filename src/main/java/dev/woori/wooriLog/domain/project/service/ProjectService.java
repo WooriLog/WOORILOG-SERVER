@@ -1,6 +1,7 @@
 package dev.woori.wooriLog.domain.project.service;
 
 import dev.woori.wooriLog.domain.blog.dto.BlogInfoDto;
+import dev.woori.wooriLog.domain.blog.dto.ProjectBlogCount;
 import dev.woori.wooriLog.domain.blog.entity.Blog;
 import dev.woori.wooriLog.domain.blog.repository.BlogRepository;
 import dev.woori.wooriLog.domain.member.dto.MemberInfoDto;
@@ -23,6 +24,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -120,8 +122,15 @@ public class ProjectService {
         List<Project> topByCreatedAtDesc =
                 projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
 
+        List<ProjectBlogCount> blogCountsByProjects = blogRepository.findBlogCountsByProjects(topByCreatedAtDesc);
+
+        Map<Long, Long> blogCountMap = blogCountsByProjects.stream()
+                .collect(Collectors.toMap(ProjectBlogCount::projectId, ProjectBlogCount::blogCount));
+
         return topByCreatedAtDesc.stream()
-                .map(ProjectBasicInfoDto::create)
+                .map(project -> {
+                    return ProjectBasicInfoDto.create(project, blogCountMap.getOrDefault(project.getId(), 0L));
+                })
                 .toList();
     }
 

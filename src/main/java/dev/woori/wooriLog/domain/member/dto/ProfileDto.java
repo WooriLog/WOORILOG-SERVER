@@ -23,7 +23,7 @@ public record ProfileDto(
                 .toList();
 
         List<ProjectBasicInfoDto> projectBasicInfoDtos = projects.stream()
-                .map(ProjectBasicInfoDto::create)
+                .map(ProjectBasicInfoDto::of)
                 .toList();
 
         return ProfileDto.builder()
