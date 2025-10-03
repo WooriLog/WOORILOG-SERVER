@@ -78,7 +78,7 @@ public class GoogleOAuthService {
     private GoogleUserInfoRes getUserInfo(String accessToken) {
         if (StringUtils.hasText(accessToken) && !accessToken.startsWith(Constants.BEARER))
             accessToken = Constants.BEARER + accessToken;
-        return feignProvider.getUserInfo(Constants.BEARER + accessToken);
+        return feignProvider.getUserInfo(accessToken);
     }
 
     private void isEnrolled(String email) {
