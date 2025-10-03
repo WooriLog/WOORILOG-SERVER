@@ -7,14 +7,20 @@ import dev.woori.wooriLog.global.auth.dto.*;
 import dev.woori.wooriLog.global.auth.feign.FeignProvider;
 import dev.woori.wooriLog.global.auth.jwt.JwtProvider;
 import dev.woori.wooriLog.global.auth.jwt.Token;
+import dev.woori.wooriLog.global.cache.EnrollCache;
 import dev.woori.wooriLog.global.exception.UnEnrolledException;
 import dev.woori.wooriLog.global.exception.WooriLogUseException;
 import dev.woori.wooriLog.global.response.error.ErrorBaseCode;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.UUID;
+
+import static dev.woori.wooriLog.global.response.error.ErrorMessage.*;
 
 
 @Slf4j
@@ -25,6 +31,7 @@ public class GoogleOAuthService {
     private final FeignProvider feignProvider;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final EnrollCache enrollCache;
 
     /**
      * 로그인 로직
@@ -39,9 +46,14 @@ public class GoogleOAuthService {
         GoogleTokenRes googleToken = feignProvider.getGoogleToken(request.authorizationCode());
         GoogleUserInfoRes userInfo = getUserInfo(googleToken.access_token());
 
-        // Member 조회 or 생성
+        // 회원가입 필요
+        if (!memberRepository.existsMemberByProviderAndSocialId(Constants.GOOGLE, userInfo.sub())) {
+            String ticket = issueTicket(googleToken.access_token());
+            throw new UnEnrolledException(ticket);
+        }
+
         Member member = memberRepository.findByProviderAndSocialId(Constants.GOOGLE, userInfo.sub()) // 소셜 ID를 통한 유저 조회
-                .orElseThrow(() -> new UnEnrolledException(googleToken.access_token()));
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
 
         // 프로필 이미지 변경시 변경사항 적용
         member.checkProfile(userInfo.picture());
@@ -58,8 +70,15 @@ public class GoogleOAuthService {
      * @return LoginSuccessRes
      */
     @Transactional
-    public LoginSuccessRes enroll(final String accessToken, GoogleEnrollReq request) {
+    public LoginSuccessRes enroll(String ticket, GoogleEnrollReq request) {
         log.info("[Auth Service] Member Enroll : request={}", request);
+
+        if (isStartWithBearer(ticket)) {
+            ticket = ticket.replace(Constants.BEARER, "");
+        }
+
+        String accessToken = enrollCache.findAndConsume(ticket)
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_TOKEN));
 
         GoogleUserInfoRes userInfo = getUserInfo(accessToken);
         isEnrolled(userInfo.email());
@@ -76,7 +95,7 @@ public class GoogleOAuthService {
      * @return GoogleUserInfoRes 구글에서 전달받은 유저정보
      */
     private GoogleUserInfoRes getUserInfo(String accessToken) {
-        if (StringUtils.hasText(accessToken) && !accessToken.startsWith(Constants.BEARER))
+        if (!isStartWithBearer(accessToken))
             accessToken = Constants.BEARER + accessToken;
         return feignProvider.getUserInfo(accessToken);
     }
@@ -85,5 +104,15 @@ public class GoogleOAuthService {
         if (memberRepository.existsMemberByEmail(email)) {
             throw new WooriLogUseException(ErrorBaseCode.CONFLICT);
         }
+    }
+
+    private String issueTicket(String accessToken) {
+        String ticket = UUID.randomUUID().toString();
+        enrollCache.save(ticket, accessToken);
+        return ticket;
+    }
+
+    private static boolean isStartWithBearer(String header) {
+        return StringUtils.hasText(header) && header.startsWith(Constants.BEARER);
     }
 }
