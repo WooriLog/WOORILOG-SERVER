@@ -33,7 +33,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
+    implementation 'com.github.ben-manes.caffeine:caffeine'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // Feign
