@@ -16,6 +16,8 @@ import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class BlogService {
      * @param request 새로운 글의 데이터가 담긴 request
      */
     @Transactional
+    @CacheEvict(value = "home-blogs", allEntries = true)
     public Long createBlog(Long projectId, Long userId, BlogCreateOrUpdateReq request) {
         log.info("[Blog Service] Create Blog : projectId={}, userId={}", projectId, userId);
         // 프로젝트-멤버 관계 조회
@@ -92,6 +95,7 @@ public class BlogService {
      * 홈 화면에 전달할 최신 5개 블로그 기본 정보 반환 메서드
      * @return List<BlogBasicInfoRes>
      */
+    @Cacheable(value = "home-blogs")
     public List<BlogBasicInfoRes> getBlogBasicInfos() {
         log.info("[Blog Service] getBlogBasicInfos");
         List<Blog> top5OrderByCreatedAtDesc =
@@ -103,22 +107,6 @@ public class BlogService {
     }
 
     /**
-     * 열람할 글을 작성한 프로젝트에 대한 DTO를 생성해 리턴합니다.
-     *
-     * @param project 열람할 글을 작성한 프로젝트의 엔티티
-     * @return BlogProjectDto: 열람할 글을 작성한 프로젝트의 DTO
-     */
-    private BlogProjectDto createBlogProjectDTO(Project project, Member author) {
-        List<ProjectMember> projectMember = projectMemberRepository.findWithProjectAndNotAuthorByIds(project, author);
-
-        List<MemberInfoDto> memberList = projectMember.stream()
-                .map(pm -> MemberInfoDto.create(pm.getMember()))
-                .toList();
-
-        return BlogProjectDto.create(project, memberList);
-    }
-
-    /**
      * 블로그 id와 수정된 블로그 포스팅 정보를 통해 블로그 글을 수정
      * 블로그 글 작성자 id와 요청을 보낸 사용자 id가 일치하지 않으면 예외 발생
      * @param userId 사용자 id
@@ -127,6 +115,7 @@ public class BlogService {
      * @return blogId 블로그 id
      */
     @Transactional
+    @CacheEvict(value = "home-blogs", allEntries = true)
     public Long updateBlog(Long userId, Long blogId, BlogCreateOrUpdateReq request) {
         log.info("[Blog Service] Update Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
@@ -142,6 +131,7 @@ public class BlogService {
      * @param blogId 블로그 id
      */
     @Transactional
+    @CacheEvict(value = "home-blogs", allEntries = true)
     public void deleteBlog(Long userId, Long blogId) {
         log.info("[Blog Service] Delete Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
@@ -160,6 +150,22 @@ public class BlogService {
             throw new AccessDeniedException(BLOG_ACCESS_DENIED);
         }
         return blog;
+    }
+
+    /**
+     * 열람할 글을 작성한 프로젝트에 대한 DTO를 생성해 리턴합니다.
+     *
+     * @param project 열람할 글을 작성한 프로젝트의 엔티티
+     * @return BlogProjectDto: 열람할 글을 작성한 프로젝트의 DTO
+     */
+    private BlogProjectDto createBlogProjectDTO(Project project, Member author) {
+        List<ProjectMember> projectMember = projectMemberRepository.findWithProjectAndNotAuthorByIds(project, author);
+
+        List<MemberInfoDto> memberList = projectMember.stream()
+                .map(pm -> MemberInfoDto.create(pm.getMember()))
+                .toList();
+
+        return BlogProjectDto.create(project, memberList);
     }
 
     /**
