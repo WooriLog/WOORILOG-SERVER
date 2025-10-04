@@ -1,7 +1,7 @@
 package dev.woori.wooriLog.global.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;

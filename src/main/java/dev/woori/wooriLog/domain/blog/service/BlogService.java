@@ -13,6 +13,7 @@ import dev.woori.wooriLog.domain.member.entity.Member;
 import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
+import dev.woori.wooriLog.global.cache.CacheNames;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class BlogService {
      * @param request 새로운 글의 데이터가 담긴 request
      */
     @Transactional
-    @CacheEvict(value = "home-blogs", allEntries = true)
+    @CacheEvict(value = CacheNames.HOME_BLOGS, allEntries = true)
     public Long createBlog(Long projectId, Long userId, BlogCreateOrUpdateReq request) {
         log.info("[Blog Service] Create Blog : projectId={}, userId={}", projectId, userId);
         // 프로젝트-멤버 관계 조회
@@ -95,7 +96,7 @@ public class BlogService {
      * 홈 화면에 전달할 최신 5개 블로그 기본 정보 반환 메서드
      * @return List<BlogBasicInfoRes>
      */
-    @Cacheable(value = "home-blogs")
+    @Cacheable(value = CacheNames.HOME_BLOGS)
     public List<BlogBasicInfoRes> getBlogBasicInfos() {
         log.info("[Blog Service] getBlogBasicInfos");
         List<Blog> top5OrderByCreatedAtDesc =
@@ -115,7 +116,7 @@ public class BlogService {
      * @return blogId 블로그 id
      */
     @Transactional
-    @CacheEvict(value = "home-blogs", allEntries = true)
+    @CacheEvict(value = CacheNames.HOME_BLOGS, allEntries = true)
     public Long updateBlog(Long userId, Long blogId, BlogCreateOrUpdateReq request) {
         log.info("[Blog Service] Update Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
@@ -131,7 +132,7 @@ public class BlogService {
      * @param blogId 블로그 id
      */
     @Transactional
-    @CacheEvict(value = "home-blogs", allEntries = true)
+    @CacheEvict(value = CacheNames.HOME_BLOGS, allEntries = true)
     public void deleteBlog(Long userId, Long blogId) {
         log.info("[Blog Service] Delete Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);

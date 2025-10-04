@@ -16,6 +16,7 @@ import dev.woori.wooriLog.domain.project.entity.Project;
 import dev.woori.wooriLog.domain.project.entity.ProjectMember;
 import dev.woori.wooriLog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.wooriLog.domain.project.repository.ProjectRepository;
+import dev.woori.wooriLog.global.cache.CacheNames;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +53,7 @@ public class ProjectService {
      * @param request 프로젝트 생성 요청 DTO
      */
     @Transactional
-    @CacheEvict(value = "home-projects", allEntries = true)
+    @CacheEvict(value = CacheNames.HOME_PROJECTS, allEntries = true)
     public Long createProject(Long leaderId, ProjectCreateReq request) {
         log.info("[Project Service] Create Project");
         // 프로젝트 생성
@@ -118,7 +117,7 @@ public class ProjectService {
      * 홈 화면에 전달할 최신 5개 프로젝트 기본 정보 반환 메서드
      * @return List<ProjectBasicInfoDto>
      */
-    @Cacheable(value = "home-projects")
+    @Cacheable(value = CacheNames.HOME_PROJECTS)
     public List<ProjectBasicInfoDto> getProjectBasicInfos() {
         log.info("[Project Service] getProjectBasicInfos");
 
@@ -143,7 +142,7 @@ public class ProjectService {
      * @param leaderId 요청 유저 ID
      */
     @Transactional
-    @CacheEvict(value = "home-projects", allEntries = true)
+    @CacheEvict(value = CacheNames.HOME_PROJECTS, allEntries = true)
     public void deleteProject(Long projectId, Long leaderId) {
         Project project = findProjectBy(projectId);
         // TODO : Spring Interceptor를 적용하여 추후 분리
