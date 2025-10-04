@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class InMemoryEnrollCache implements EnrollCache{
 
-    private final Cache<String, String> cache = Caffeine.newBuilder()
+    private final Cache<@NonNull String, String> cache = Caffeine.newBuilder()
             .expireAfterWrite(Duration.ofMinutes(10))
             .maximumSize(1000)
             .build();
