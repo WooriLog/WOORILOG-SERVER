@@ -107,7 +107,6 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UnEnrolledException.class)
     public ResponseEntity<BaseResponse<?>> handleUnEnrolledException(final UnEnrolledException e) {
-        logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
     }
 
