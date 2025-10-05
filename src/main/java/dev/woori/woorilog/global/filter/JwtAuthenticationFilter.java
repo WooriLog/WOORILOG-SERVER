@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     doAuthentication(accessToken, userId);
                 } catch (JwtTokenException e) {
                     // 유효하지 않은 토큰의 경우 catch문에 잡혀 Authentication을 생성하지 않음
-                    log.warn("[JwtAuthenticationFilter] Invalid JwtToken from Anonymous User", e);
+                    log.warn("[JwtAuthenticationFilter] Invalid JwtToken from Anonymous User");
                 }
             }
             filterChain.doFilter(request, response);

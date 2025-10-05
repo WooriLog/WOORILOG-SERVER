@@ -17,7 +17,7 @@
         <!-- 날짜+용량 기준 롤링 권장 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 아카이브 파일 경로 -->
-            <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <!-- 총 보관 용량 한도 -->
             <totalSizeCap>1GB</totalSizeCap>
