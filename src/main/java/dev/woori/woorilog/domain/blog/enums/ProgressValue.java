@@ -3,11 +3,6 @@ package dev.woori.woorilog.domain.blog.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static dev.woori.woorilog.global.response.error.ErrorMessage.NOT_DEFINED_VALUE;
 
 public enum ProgressValue {
