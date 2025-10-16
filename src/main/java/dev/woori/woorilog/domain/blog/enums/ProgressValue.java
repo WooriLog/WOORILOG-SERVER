@@ -3,19 +3,21 @@ package dev.woori.woorilog.domain.blog.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import static dev.woori.woorilog.global.response.error.ErrorMessage.NOT_DEFINED_VALUE;
+
 public enum ProgressValue {
     // 회고
     OUTLINE("개요"),
-    KEEP("잘했던 점"),
-    PROBLEM("아쉬웠던 점"),
-    TRY("배운 점 & 개선 방안"),
+    KEEP("유지할 것"),
+    PROBLEM("개선할 것"),
+    TRY("시도할 것"),
     // 트러블 슈팅
-    SITUATION("상황"),
+    SITUATION("문제상황"),
     CONCERN("고민"),
     ACTION("실행"),
-    REFLECTION("회고/성장"),
+    REFLECTION("결론&회고"),
     // 딥다이브
-    INTRODUCE("기술소개"),
+    INTRODUCE("기술 소개"),
     EXAMPLE("예시"),
     CORE("핵심 개념"),
     CONCLUSION("결론"),
@@ -40,6 +42,6 @@ public enum ProgressValue {
                 return category;
             }
         }
-        throw new IllegalArgumentException("정의되지 않은 값입니다." + value);
+        throw new IllegalArgumentException(NOT_DEFINED_VALUE + value);
     }
 }

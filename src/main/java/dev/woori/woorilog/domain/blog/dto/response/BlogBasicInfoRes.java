@@ -8,6 +8,7 @@ import dev.woori.woorilog.domain.member.entity.Member;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Builder
@@ -41,7 +42,7 @@ public record BlogBasicInfoRes(
     }
 
     private static List<ProgressDto> transProgressDtos (List<Progress> progresses) {
-        return progresses.stream()
+        return progresses.stream().sorted(Comparator.comparing(Progress::getId).reversed())
                 .map(ProgressDto::create)
                 .toList();
     }

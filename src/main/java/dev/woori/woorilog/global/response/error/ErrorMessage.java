@@ -14,6 +14,7 @@ public abstract class ErrorMessage {
     public static final String PROJECT_NOT_FOUND = "해당 프로젝트를 찾을 수 없습니다.";
     public static final String BLOG_NOT_FOUND = "해당 블로그를 찾을 수 없습니다.";
     public static final String RELATION_NOT_FOUND = "해당 멤버가 가입되지 않은 프로젝트 입니다.";
+    public static final String NOT_DEFINED_VALUE = "정의되지 않은 값입니다.";
 
     /**
      * INVALID - 유효하지 않음
