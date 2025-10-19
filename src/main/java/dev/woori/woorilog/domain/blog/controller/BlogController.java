@@ -25,8 +25,8 @@ public class BlogController {
 
     // 최신 5개의 블로그 조회 (홈화면)
     @GetMapping("/blog/home")
-    public ResponseEntity<BaseResponse<?>> getHomeBlogInfos() {
-        return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogBasicInfos());
+    public ResponseEntity<BaseResponse<?>> getHomeBlogInfos(@RequestParam(defaultValue = "1") int page) {
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogBasicInfos(page));
     }
 
     // 블로그 작성

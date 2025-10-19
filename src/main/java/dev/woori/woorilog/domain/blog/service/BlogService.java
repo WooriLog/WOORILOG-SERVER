@@ -3,8 +3,9 @@ package dev.woori.woorilog.domain.blog.service;
 
 import dev.woori.woorilog.domain.blog.dto.*;
 import dev.woori.woorilog.domain.blog.dto.request.BlogCreateOrUpdateReq;
-import dev.woori.woorilog.domain.blog.dto.response.BlogBasicInfoRes;
+import dev.woori.woorilog.domain.blog.dto.BlogBasicInfoDto;
 import dev.woori.woorilog.domain.blog.dto.response.BlogDetailInfoRes;
+import dev.woori.woorilog.domain.blog.dto.response.BlogHomeRes;
 import dev.woori.woorilog.domain.blog.entity.Blog;
 import dev.woori.woorilog.domain.blog.entity.Progress;
 import dev.woori.woorilog.domain.blog.repository.BlogRepository;
@@ -18,7 +19,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +39,8 @@ public class BlogService {
     private final BlogRepository blogRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
+    private static final int BLOG_PAGE_SIZE = 10;
+    private static final String SORT_CRITERIA = "createdAt";
     /**
      * 프로젝트 ID, 유저ID, Request의 새 문서 데이터를 받아 DB에 저장합니다.
      * 
@@ -90,16 +95,19 @@ public class BlogService {
 
     /**
      * 홈 화면에 전달할 최신 5개 블로그 기본 정보 반환 메서드
-     * @return List<BlogBasicInfoRes>
+     * @return List<BlogBasicInfoDto>
      */
     @Cacheable(value = CacheNames.HOME_BLOGS)
-    public List<BlogBasicInfoRes> getBlogBasicInfos() {
-        List<Blog> top5OrderByCreatedAtDesc =
-                blogRepository.findTopOrderByCreatedAtDesc(PageRequest.of(0, 5));
+    public BlogHomeRes getBlogBasicInfos(int page) {
+        Page<Blog> blogPage = blogRepository.findAll(
+                PageRequest.of(page - 1, BLOG_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending())
+        );
 
-        return top5OrderByCreatedAtDesc.stream()
-                .map(BlogBasicInfoRes::create)
+        List<BlogBasicInfoDto> blogBasicInfoDtoList = blogPage.stream()
+                .map(BlogBasicInfoDto::create)
                 .toList();
+
+        return BlogHomeRes.of(blogBasicInfoDtoList, blogPage.getTotalPages(), blogPage.getNumber() + 1);
     }
 
     /**
