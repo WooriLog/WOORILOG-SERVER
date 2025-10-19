@@ -21,8 +21,8 @@ public class ProjectController {
 
     // 최신 5개의 프로젝트 조회 (홈화면)
     @GetMapping("/home")
-    public ResponseEntity<BaseResponse<?>> getHomeProjectInfos() {
-        return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectBasicInfos());
+    public ResponseEntity<BaseResponse<?>> getHomeProjectInfos(@RequestParam(defaultValue = "1") int page) {
+        return ApiResponseUtil.success(SuccessCode.OK, projectService.getProjectBasicInfos(page));
     }
 
     // 프로젝트 생성

@@ -11,6 +11,7 @@ import dev.woori.woorilog.domain.member.repository.MemberRepository;
 import dev.woori.woorilog.domain.project.dto.ProjectBasicInfoDto;
 import dev.woori.woorilog.domain.project.dto.request.ProjectCreateReq;
 import dev.woori.woorilog.domain.project.dto.ProjectDetailInfoDto;
+import dev.woori.woorilog.domain.project.dto.response.ProjectHomeRes;
 import dev.woori.woorilog.domain.project.dto.response.ProjectInfoRes;
 import dev.woori.woorilog.domain.project.entity.Project;
 import dev.woori.woorilog.domain.project.entity.ProjectMember;
@@ -21,7 +22,11 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -43,6 +48,9 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
     private final BlogRepository blogRepository;
+
+    private static final int PROJECT_PAGE_SIZE = 10;
+    private static final String SORT_CRITERIA = "createdAt";
 
     /**
      * 프로젝트 생성 메서드
@@ -110,20 +118,25 @@ public class ProjectService {
      * @return List<ProjectBasicInfoDto>
      */
     @Cacheable(value = CacheNames.HOME_PROJECTS)
-    public List<ProjectBasicInfoDto> getProjectBasicInfos() {
-        List<Project> topByCreatedAtDesc =
-                projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
+    public ProjectHomeRes getProjectBasicInfos(int page) {
 
-        List<ProjectBlogCount> blogCountsByProjects = blogRepository.findBlogCountsByProjects(topByCreatedAtDesc);
+        Page<Project> projectPage = projectRepository.findAll(
+                PageRequest.of(page - 1, PROJECT_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending())
+        );
 
-        Map<Long, Long> blogCountMap = blogCountsByProjects.stream()
-                .collect(Collectors.toMap(ProjectBlogCount::projectId, ProjectBlogCount::blogCount));
+        List<Project> projectList = projectPage.stream().toList();
+        Map<Long, Long> blogCountMap = blogRepository.findBlogCountsByProjects(projectList).stream()
+                .collect(
+                        Collectors.toMap(ProjectBlogCount::projectId, ProjectBlogCount::blogCount)
+                );
 
-        return topByCreatedAtDesc.stream()
+        List<ProjectBasicInfoDto> projectBasicInfoDtoList = projectList.stream()
                 .map(project -> {
                     return ProjectBasicInfoDto.create(project, blogCountMap.getOrDefault(project.getId(), 0L));
                 })
                 .toList();
+
+        return ProjectHomeRes.of(projectPage.getNumber() + 1, projectPage.getTotalPages(), projectBasicInfoDtoList);
     }
 
     /**
