@@ -22,6 +22,7 @@ public abstract class ErrorMessage {
     public static final String INVALID_MEMBER_EMAIL = "멤버의 이메일이 올바르지 않습니다 : ";
     public static final String DUPLICATED_REQUEST = "이미 존재하는 리소스 입니다.";
     public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
+    public static final String UNENROLLED_USER = "가입되지 않은 사용자입니다.";
 
     /**
      * DENIED - 접근 거부

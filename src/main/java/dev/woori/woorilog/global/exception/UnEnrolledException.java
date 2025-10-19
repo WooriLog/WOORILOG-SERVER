@@ -2,7 +2,7 @@ package dev.woori.woorilog.global.exception;
 
 import lombok.Getter;
 
-import static dev.woori.woorilog.global.auth.Constants.UNENROLLED_USER;
+import static dev.woori.woorilog.global.response.error.ErrorMessage.UNENROLLED_USER;
 
 @Getter
 public class UnEnrolledException extends RuntimeException {
