@@ -39,7 +39,7 @@ public class BlogService {
     private final BlogRepository blogRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    private static final int BLOG_PAGE_SIZE = 10;
+    private static final int BLOG_PAGE_SIZE = 6;
     private static final String SORT_CRITERIA = "createdAt";
     /**
      * 프로젝트 ID, 유저ID, Request의 새 문서 데이터를 받아 DB에 저장합니다.
