@@ -35,14 +35,14 @@ public record BlogBasicInfoDto(
                 .authorProfileUrl(author.getProfileUrl())
                 .category(blog.getCategory())
                 .tags(blog.getTags())
-                .progresses(transProgressDtoList(blog.getProgresses()))
+                .progresses(toProgressDtoList(blog.getProgresses()))
                 .createdAt(blog.getCreatedAt())
                 .updatedAt(blog.getUpdatedAt())
                 .build();
     }
 
-    private static List<ProgressDto> transProgressDtoList(List<Progress> progresses) {
-        return progresses.stream().sorted(Comparator.comparing(Progress::getId).reversed())
+    private static List<ProgressDto> toProgressDtoList(List<Progress> progresses) {
+        return progresses.stream().sorted(Comparator.comparing(Progress::getId))
                 .map(ProgressDto::create)
                 .toList();
     }
