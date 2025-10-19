@@ -94,8 +94,9 @@ public class BlogService {
     }
 
     /**
-     * 홈 화면에 전달할 최신 5개 블로그 기본 정보 반환 메서드
-     * @return List<BlogBasicInfoDto>
+     * 해당 페이지에 날짜순으로 정렬된 10개의 블로그 반환
+     * @param page 조회할 페이지
+     * @return BlogHomeRes 페이지네이션된 블로그 정보
      */
     @Cacheable(value = CacheNames.HOME_BLOGS)
     public BlogHomeRes getBlogBasicInfos(int page) {
@@ -107,7 +108,7 @@ public class BlogService {
                 .map(BlogBasicInfoDto::create)
                 .toList();
 
-        return BlogHomeRes.of(blogBasicInfoDtoList, blogPage.getTotalPages(), blogPage.getNumber() + 1);
+        return BlogHomeRes.of(blogPage.getNumber() + 1, blogPage.getTotalPages(), blogBasicInfoDtoList);
     }
 
     /**

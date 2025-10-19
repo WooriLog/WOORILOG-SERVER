@@ -11,11 +11,11 @@ public record BlogHomeRes(
         int totalPage,
         List<BlogBasicInfoDto> blogInfos
 ) {
-    public static BlogHomeRes of(List<BlogBasicInfoDto> blogInfos, int totalPage, int currentPage) {
+    public static BlogHomeRes of(int currentPage, int totalPage, List<BlogBasicInfoDto> blogInfos) {
         return BlogHomeRes.builder()
-                .blogInfos(blogInfos)
-                .totalPage(totalPage)
                 .currentPage(currentPage)
+                .totalPage(totalPage)
+                .blogInfos(blogInfos)
                 .build();
     }
 }

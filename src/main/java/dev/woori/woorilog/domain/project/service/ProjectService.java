@@ -114,8 +114,9 @@ public class ProjectService {
     }
 
     /**
-     * 홈 화면에 전달할 최신 5개 프로젝트 기본 정보 반환 메서드
-     * @return List<ProjectBasicInfoDto>
+     * 해당 페이지에 날짜순으로 정렬된 10개의 프로젝트 반환
+     * @param page 조회할 페이지
+     * @return ProjectHomeRes 페이지네이션된 프로젝트 정보
      */
     @Cacheable(value = CacheNames.HOME_PROJECTS)
     public ProjectHomeRes getProjectBasicInfos(int page) {
