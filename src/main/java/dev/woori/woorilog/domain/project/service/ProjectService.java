@@ -125,7 +125,8 @@ public class ProjectService {
                 PageRequest.of(page - 1, PROJECT_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending())
         );
 
-        List<Project> projectList = projectPage.stream().toList();
+        List<Project> projectList = projectPage.getContent();
+
         Map<Long, Long> blogCountMap = blogRepository.findBlogCountsByProjects(projectList).stream()
                 .collect(
                         Collectors.toMap(ProjectBlogCount::projectId, ProjectBlogCount::blogCount)
