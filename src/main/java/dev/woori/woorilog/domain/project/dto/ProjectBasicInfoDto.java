@@ -11,6 +11,7 @@ public record ProjectBasicInfoDto(
         Long projectId,
         String projectName,
         Long blogCount,
+        String summary,
         List<String> techStack,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -20,6 +21,7 @@ public record ProjectBasicInfoDto(
                 .projectId(project.getId())
                 .projectName(project.getProjectName())
                 .blogCount(blogCount)
+                .summary(project.getSummary())
                 .techStack(project.getTechStack())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
@@ -30,6 +32,7 @@ public record ProjectBasicInfoDto(
         return ProjectBasicInfoDto.builder()
                 .projectId(project.getId())
                 .projectName(project.getProjectName())
+                .summary(project.getSummary())
                 .techStack(project.getTechStack())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
