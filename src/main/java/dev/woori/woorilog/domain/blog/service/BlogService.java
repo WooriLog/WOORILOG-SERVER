@@ -16,7 +16,6 @@ import dev.woori.woorilog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.woorilog.global.cache.CacheNames;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +28,6 @@ import java.util.Optional;
 
 import static dev.woori.woorilog.global.response.error.ErrorMessage.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -48,7 +46,6 @@ public class BlogService {
     @Transactional
     @CacheEvict(value = CacheNames.HOME_BLOGS, allEntries = true)
     public Long createBlog(Long projectId, Long userId, BlogCreateOrUpdateReq request) {
-        log.info("[Blog Service] Create Blog : projectId={}, userId={}", projectId, userId);
         // 프로젝트-멤버 관계 조회
         ProjectMember projectMember = projectMemberRepository.findWithMemberAndProjectByIds(projectId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(RELATION_NOT_FOUND));
@@ -76,7 +73,6 @@ public class BlogService {
      */
     @Transactional
     public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
-        log.info("[Blog Service] Get Blog Info : blogId={}", postId);
         Blog blog = blogRepository.findBlogByIdWithDetails(postId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
 
@@ -98,7 +94,6 @@ public class BlogService {
      */
     @Cacheable(value = CacheNames.HOME_BLOGS)
     public List<BlogBasicInfoRes> getBlogBasicInfos() {
-        log.info("[Blog Service] getBlogBasicInfos");
         List<Blog> top5OrderByCreatedAtDesc =
                 blogRepository.findTopOrderByCreatedAtDesc(PageRequest.of(0, 5));
 
@@ -118,7 +113,6 @@ public class BlogService {
     @Transactional
     @CacheEvict(value = CacheNames.HOME_BLOGS, allEntries = true)
     public Long updateBlog(Long userId, Long blogId, BlogCreateOrUpdateReq request) {
-        log.info("[Blog Service] Update Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
         List<Progress> progresses = filterAndCreateProgress(request);
         blog.update(request, progresses);
@@ -134,7 +128,6 @@ public class BlogService {
     @Transactional
     @CacheEvict(value = CacheNames.HOME_BLOGS, allEntries = true)
     public void deleteBlog(Long userId, Long blogId) {
-        log.info("[Blog Service] Delete Blog : blogId={}", blogId);
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
         blogRepository.delete(blog);
     }

@@ -19,7 +19,6 @@ import dev.woori.woorilog.domain.project.repository.ProjectRepository;
 import dev.woori.woorilog.global.cache.CacheNames;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +34,6 @@ import static dev.woori.woorilog.domain.DomainConstants.LEADER;
 import static dev.woori.woorilog.domain.DomainConstants.MEMBER;
 import static dev.woori.woorilog.global.response.error.ErrorMessage.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -54,7 +52,6 @@ public class ProjectService {
     @Transactional
     @CacheEvict(value = CacheNames.HOME_PROJECTS, allEntries = true)
     public Long createProject(Long leaderId, ProjectCreateReq request) {
-        log.info("[Project Service] Create Project");
         // 프로젝트 생성
         Project project = Project.create(request);
         Long projectId = projectRepository.save(project).getId();
@@ -74,8 +71,6 @@ public class ProjectService {
      * @return ProjectInfoRes
      */
     public ProjectInfoRes getProjectInfo(Long projectId) {
-        log.info("[Project Service] getProjectInfo : projectId={}", projectId);
-
         Project project = findProjectBy(projectId);
 
         List<Member> projectMembers = projectMemberRepository.findMembersByProject(project);
@@ -102,8 +97,6 @@ public class ProjectService {
      * @return List<ProjectDetailInfoDto>
      */
     public List<ProjectDetailInfoDto> getProjectListByMemberId(Long memberId) {
-        log.info("[Project Service] getProjectListByMemberId : memberId={}", memberId);
-
         Member member = findMemberBy(memberId);
         List<Project> projectList = projectMemberRepository.findProjectsByMember(member);
 
@@ -118,8 +111,6 @@ public class ProjectService {
      */
     @Cacheable(value = CacheNames.HOME_PROJECTS)
     public List<ProjectBasicInfoDto> getProjectBasicInfos() {
-        log.info("[Project Service] getProjectBasicInfos");
-
         List<Project> topByCreatedAtDesc =
                 projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
 
