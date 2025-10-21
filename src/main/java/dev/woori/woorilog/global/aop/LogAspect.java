@@ -17,10 +17,10 @@ import java.util.Arrays;
 @Component
 public class LogAspect {
 
-    @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..)) || execution(* dev.woori.woorilog.global.auth.service..*Service.*(..))")
+    @Pointcut("execution(* dev.woori.woorilog.domain..controller.*.*(..))")
     private void onRequest() {};
 
-    @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..))")
+    @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..)) || execution(* dev.woori.woorilog.global.auth.service..*Service.*(..))")
     private void onService() {};
 
     @Before("onRequest()")
