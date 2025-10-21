@@ -51,8 +51,8 @@ public class ProjectController {
 
     // 프로젝트 삭제
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<BaseResponse<?>> deleteProject(@PathVariable Long projectId, @UserId Long leaderId) {
-        projectService.deleteProject(projectId, leaderId);
+    public ResponseEntity<BaseResponse<?>> deleteProject(@PathVariable Long projectId) {
+        projectService.deleteProject(projectId);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
@@ -60,10 +60,9 @@ public class ProjectController {
     @PostMapping("/{projectId}/members/{memberId}")
     public ResponseEntity<BaseResponse<?>> addProjectMember(
             @PathVariable Long projectId,
-            @UserId Long leaderId,
             @PathVariable Long memberId
     ) {
-        projectService.addProjectMember(projectId, leaderId, memberId);
+        projectService.addProjectMember(projectId, memberId);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
