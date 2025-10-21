@@ -17,20 +17,17 @@ import java.util.Arrays;
 @Component
 public class LogAspect {
 
-    @Pointcut("execution(* dev.woori.woorilog.domain..controller.*.*(..))")
+    @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..)) || execution(* dev.woori.woorilog.global.auth.service..*Service.*(..))")
     private void onRequest() {};
 
     @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..))")
     private void onService() {};
 
-    @Pointcut("execution(* dev.woori.woorilog.global.auth.service.GoogleOAuthService.*(..))")
-    private void onLogin() {};
-
     @Before("onRequest()")
     public void beforeParameterLog(JoinPoint joinPoint) {
         Class<? extends Object> clazz = joinPoint.getTarget().getClass();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        log.info("[{}] {} {}",clazz.getSimpleName(), request.getMethod(), request.getRequestURI());
+        log.info("[{}] {} {}", clazz.getSimpleName(), request.getMethod(), request.getRequestURI());
     }
 
     @Before("onService()")
@@ -44,11 +41,5 @@ public class LogAspect {
         if (args.length > 0) {
             log.debug("[{}] Parameters: {}", className, Arrays.toString(args));
         }
-    }
-
-    @Before("onLogin()")
-    public void beforeLoginLog(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        log.info("[GoogleOAuthService] {}() called", methodName);
     }
 }
