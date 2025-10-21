@@ -31,7 +31,17 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long authUserId = Long.parseLong(authentication.getPrincipal().toString());
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof String)) {
+            throw new AccessDeniedException(ACCESS_DENIED);
+        }
+
+        Long authUserId;
+
+        try {
+            authUserId = Long.parseLong((String) authentication.getPrincipal());
+        } catch (NumberFormatException e) {
+            throw new AccessDeniedException(ACCESS_DENIED);
+        }
 
         Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
