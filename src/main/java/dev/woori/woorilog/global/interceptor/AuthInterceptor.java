@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -24,24 +25,18 @@ public class AuthInterceptor implements HandlerInterceptor {
     private final ProjectMemberRepository projectMemberRepository;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         if ("GET".equals(request.getMethod())) {
             return true;
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof String)) {
+        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof Long)) {
             throw new AccessDeniedException(ACCESS_DENIED);
         }
 
-        Long authUserId;
-
-        try {
-            authUserId = Long.parseLong((String) authentication.getPrincipal());
-        } catch (NumberFormatException e) {
-            throw new AccessDeniedException(ACCESS_DENIED);
-        }
+        Long authUserId = (Long) authentication.getPrincipal();
 
         Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
