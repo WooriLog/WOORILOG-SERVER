@@ -3,6 +3,8 @@ package dev.woori.woorilog.domain.blog.repository;
 import dev.woori.woorilog.domain.blog.dto.ProjectBlogCount;
 import dev.woori.woorilog.domain.blog.entity.Blog;
 import dev.woori.woorilog.domain.project.entity.Project;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

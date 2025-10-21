@@ -1,4 +1,4 @@
-package dev.woori.woorilog.domain.blog.dto.response;
+package dev.woori.woorilog.domain.blog.dto;
 
 import dev.woori.woorilog.domain.blog.dto.request.ProgressDto;
 import dev.woori.woorilog.domain.blog.entity.Blog;
@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Builder
-public record BlogBasicInfoRes(
+public record BlogBasicInfoDto(
         Long blogId,
         String title,
         String projectName,
@@ -24,10 +24,10 @@ public record BlogBasicInfoRes(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static BlogBasicInfoRes create(Blog blog) {
+    public static BlogBasicInfoDto create(Blog blog) {
         Member author = blog.getMember();
 
-        return BlogBasicInfoRes.builder()
+        return BlogBasicInfoDto.builder()
                 .blogId(blog.getId())
                 .title(blog.getTitle())
                 .projectName(blog.getProject().getProjectName())
@@ -35,14 +35,14 @@ public record BlogBasicInfoRes(
                 .authorProfileUrl(author.getProfileUrl())
                 .category(blog.getCategory())
                 .tags(blog.getTags())
-                .progresses(transProgressDtos(blog.getProgresses()))
+                .progresses(toProgressDtoList(blog.getProgresses()))
                 .createdAt(blog.getCreatedAt())
                 .updatedAt(blog.getUpdatedAt())
                 .build();
     }
 
-    private static List<ProgressDto> transProgressDtos (List<Progress> progresses) {
-        return progresses.stream().sorted(Comparator.comparing(Progress::getId).reversed())
+    private static List<ProgressDto> toProgressDtoList(List<Progress> progresses) {
+        return progresses.stream().sorted(Comparator.comparing(Progress::getId))
                 .map(ProgressDto::create)
                 .toList();
     }

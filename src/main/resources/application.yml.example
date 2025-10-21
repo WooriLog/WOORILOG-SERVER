@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: wooriLog
+  datasource:
+    url: jdbc:mysql://{db-url}
+    username: {username}
+    password: {password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        default_batch_fetch_size: {batch-size}
+  cloud:
+    openfeign:
+      client:
+        config:
+          google-token:
+            connectTimeout: 3000
+            readTimeout: 5000
+            loggerLevel: basic
+          google-userinfo:
+            connectTimeout: 3000
+            readTimeout: 3000
+            loggerLevel: basic
+
+logging:
+  config: classpath:logback-prod.xml
+
+oauth:
+  google:
+    client-id: {google-api-client-id}
+    client-secret: {google-api-client-secret}
+    redirect-uri: {google-api-redirect-uri}
+    scope: {google-api-scope}
+
+jwt:
+  secret: {jwt-secret(base64)}
+  access-token-expiration-time: {access-token-expiration-time}
+  refresh-token-expiration-time: {refresh-token-expiration-time}
+
