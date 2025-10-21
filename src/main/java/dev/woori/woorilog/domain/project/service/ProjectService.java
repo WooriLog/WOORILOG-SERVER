@@ -19,11 +19,9 @@ import dev.woori.woorilog.domain.project.repository.ProjectRepository;
 import dev.woori.woorilog.global.cache.CacheNames;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -36,7 +34,6 @@ import static dev.woori.woorilog.domain.DomainConstants.LEADER;
 import static dev.woori.woorilog.domain.DomainConstants.MEMBER;
 import static dev.woori.woorilog.global.response.error.ErrorMessage.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -55,7 +52,6 @@ public class ProjectService {
     @Transactional
     @CacheEvict(value = CacheNames.HOME_PROJECTS, allEntries = true)
     public Long createProject(Long leaderId, ProjectCreateReq request) {
-        log.info("[Project Service] Create Project");
         // 프로젝트 생성
         Project project = Project.create(request);
         Long projectId = projectRepository.save(project).getId();
@@ -75,8 +71,6 @@ public class ProjectService {
      * @return ProjectInfoRes
      */
     public ProjectInfoRes getProjectInfo(Long projectId) {
-        log.info("[Project Service] getProjectInfo : projectId={}", projectId);
-
         Project project = findProjectBy(projectId);
 
         List<Member> projectMembers = projectMemberRepository.findMembersByProject(project);
@@ -103,8 +97,6 @@ public class ProjectService {
      * @return List<ProjectDetailInfoDto>
      */
     public List<ProjectDetailInfoDto> getProjectListByMemberId(Long memberId) {
-        log.info("[Project Service] getProjectListByMemberId : memberId={}", memberId);
-
         Member member = findMemberBy(memberId);
         List<Project> projectList = projectMemberRepository.findProjectsByMember(member);
 
@@ -119,8 +111,6 @@ public class ProjectService {
      */
     @Cacheable(value = CacheNames.HOME_PROJECTS)
     public List<ProjectBasicInfoDto> getProjectBasicInfos() {
-        log.info("[Project Service] getProjectBasicInfos");
-
         List<Project> topByCreatedAtDesc =
                 projectRepository.findTopByCreatedAtDesc(PageRequest.of(0, 5));
 
@@ -139,14 +129,11 @@ public class ProjectService {
     /**
      * 프로젝트 삭제 메서드
      * @param projectId 삭제할 프로젝트 ID
-     * @param leaderId 요청 유저 ID
      */
     @Transactional
     @CacheEvict(value = CacheNames.HOME_PROJECTS, allEntries = true)
-    public void deleteProject(Long projectId, Long leaderId) {
+    public void deleteProject(Long projectId) {
         Project project = findProjectBy(projectId);
-        // TODO : Spring Interceptor를 적용하여 추후 분리
-        checkAccessPermission(projectId, leaderId);
         List<ProjectMember> projectMembers = projectMemberRepository.findAllByProject(project);
         projectMemberRepository.deleteAll(projectMembers);
         projectRepository.delete(project);
@@ -155,15 +142,12 @@ public class ProjectService {
     /**
      * 프로젝트 멤버 추가
      * @param projectId 프로젝트 ID
-     * @param leaderId 요청 유저 ID
      * @param memberId 프로젝트에 추가할 유저 ID
      */
     @Transactional
-    public void addProjectMember(Long projectId, Long leaderId, Long memberId) {
+    public void addProjectMember(Long projectId, Long memberId) {
         Project project = findProjectBy(projectId);
         Member requestMember = findMemberBy(memberId);
-        // TODO : Spring Interceptor를 적용하여 추후 분리
-        checkAccessPermission(projectId, leaderId);
         if (projectMemberRepository.existsByMemberIdAndProjectId(memberId, projectId)) {
             throw new IllegalArgumentException(DUPLICATED_REQUEST);
         }
@@ -178,7 +162,6 @@ public class ProjectService {
      */
     @Transactional
     public void deleteProjectMember(Long projectId, Long leaderId, Long memberId) {
-        checkAccessPermission(projectId, leaderId);
         if (memberId.equals(leaderId)) {
             throw new IllegalArgumentException(LEADER_CAN_NOT_DELETE);
         }
@@ -228,11 +211,5 @@ public class ProjectService {
 
     private Member findMemberBy(Long userId) {
         return memberRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
-    }
-
-    private void checkAccessPermission(Long projectId, Long memberId) {
-        if (!projectMemberRepository.existsByProjectIdAndMemberIdAndRole(projectId, memberId, LEADER)) {
-            throw new AccessDeniedException(ACCESS_DENIED);
-        }
     }
 }

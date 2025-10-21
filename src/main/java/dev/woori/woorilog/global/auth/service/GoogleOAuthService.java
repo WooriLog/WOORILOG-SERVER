@@ -13,7 +13,6 @@ import dev.woori.woorilog.global.exception.WooriLogUseException;
 import dev.woori.woorilog.global.response.error.ErrorBaseCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,8 +21,6 @@ import java.util.UUID;
 
 import static dev.woori.woorilog.global.response.error.ErrorMessage.*;
 
-
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleOAuthService {
@@ -40,8 +37,6 @@ public class GoogleOAuthService {
      */
     @Transactional
     public LoginSuccessRes login(GoogleLoginReq request) {
-        log.info("[Login] Login Request");
-
         // Google API & OAuth
         GoogleTokenRes googleToken = feignProvider.getGoogleToken(request.authorizationCode());
         GoogleUserInfoRes userInfo = getUserInfo(googleToken.access_token());
@@ -71,8 +66,6 @@ public class GoogleOAuthService {
      */
     @Transactional
     public LoginSuccessRes enroll(String ticket, GoogleEnrollReq request) {
-        log.info("[Auth Service] Member Enroll : request={}", request);
-
         if (isStartWithBearer(ticket)) {
             ticket = ticket.replace(Constants.BEARER, "");
         }
