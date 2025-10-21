@@ -20,8 +20,11 @@ public class LogAspect {
     @Pointcut("execution(* dev.woori.woorilog.domain..controller.*.*(..))")
     private void onRequest() {};
 
-    @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..)) || execution(* dev.woori.woorilog.global.auth.service..*Service.*(..))")
+    @Pointcut("execution(* dev.woori.woorilog.domain..service.*.*(..))")
     private void onService() {};
+
+    @Pointcut("execution(* dev.woori.woorilog.global.auth.service..*Service.*(..))")
+    private void onAuthService() {};
 
     @Before("onRequest()")
     public void beforeParameterLog(JoinPoint joinPoint) {
@@ -41,5 +44,12 @@ public class LogAspect {
         if (args.length > 0) {
             log.debug("[{}] Parameters: {}", className, Arrays.toString(args));
         }
+    }
+
+    @Before("onAuthService()")
+    public void beforeAuthServiceLog(JoinPoint joinPoint) {
+        String className = joinPoint.getTarget().getClass().getSimpleName();
+        String methodName = joinPoint.getSignature().getName();
+        log.info("[Auth {}] {}() called", className, methodName);
     }
 }
