@@ -2,6 +2,8 @@ package dev.woori.woorilog.global.util;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -9,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CookieUtils {
 
     private static final int MAX_COOKIE_SIZE = 3000;
