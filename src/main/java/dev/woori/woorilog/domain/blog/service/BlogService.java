@@ -15,8 +15,13 @@ import dev.woori.woorilog.domain.project.entity.Project;
 import dev.woori.woorilog.domain.project.entity.ProjectMember;
 import dev.woori.woorilog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.woorilog.global.cache.CacheNames;
+import dev.woori.woorilog.global.util.CookieUtils;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -31,6 +36,7 @@ import java.util.Optional;
 
 import static dev.woori.woorilog.global.response.error.ErrorMessage.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -73,13 +79,17 @@ public class BlogService {
      * 글을 열람하기 위한 글과 작성자, 작성 프로젝트 응답을 생성합니다.
      * 하위 DTO를 생성하고 조립한 응답을 생성해 리턴합니다.
      * 
-     * @param postId 열람할 글 id
+     * @param blogId 열람할 글 id
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
-        Blog blog = blogRepository.findBlogByIdWithDetails(postId)
+    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long blogId, HttpServletRequest request, HttpServletResponse response) {
+        increaseViewCount(blogId, request, response);
+
+        Blog blog = blogRepository.findBlogByIdWithDetails(blogId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+
+        blogRepository.findBlogByIdWithTags(blogId);
 
         Project project = blog.getProject();
         Member author = blog.getMember();
@@ -100,7 +110,7 @@ public class BlogService {
      */
     @Cacheable(value = CacheNames.HOME_BLOGS)
     public BlogHomeRes getBlogBasicInfos(int page) {
-        Page<Blog> blogPage = blogRepository.findAll(
+        Page<Blog> blogPage = blogRepository.findTopOrderByCreatedAtDesc(
                 PageRequest.of(page - 1, BLOG_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending())
         );
 
@@ -139,6 +149,29 @@ public class BlogService {
     public void deleteBlog(Long userId, Long blogId) {
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
         blogRepository.delete(blog);
+    }
+
+    private void increaseViewCount(Long blogId, HttpServletRequest request, HttpServletResponse response) {
+        Optional<Cookie> optionalCookie = CookieUtils.getCookie(request, CookieUtils.VIEW_COOKIE_NAME);
+        if (optionalCookie.isEmpty()) {
+            // 새로운 쿠키 추가
+            blogRepository.increaseViewCount(blogId);
+            Cookie viewCookie = CookieUtils.createViewCookie(CookieUtils.VIEW_COOKIE_NAME, String.valueOf(blogId));
+            log.info("[ADD COOKIE] : {} {}", request.getLocalName(), viewCookie.getValue());
+            response.addCookie(viewCookie);
+        } else {
+            // 쿠키 업데이트
+            Cookie originalCookie = optionalCookie.get();
+            String originalValue = CookieUtils.getDecodedCookieValue(originalCookie);
+            String additionalValue = CookieUtils.getCookieValue(String.valueOf(blogId));
+            // 조회하지 않은 게시물의 경우 조회수 + 1
+            if (!originalValue.contains(additionalValue)) {
+                blogRepository.increaseViewCount(blogId);
+                Cookie updateCookie = CookieUtils.updateCookie(originalCookie, additionalValue);
+                log.info("[UPDATE COOKIE] : {} {}", request.getLocalName(), updateCookie.getValue());
+                response.addCookie(updateCookie);
+            }
+        }
     }
 
     /**

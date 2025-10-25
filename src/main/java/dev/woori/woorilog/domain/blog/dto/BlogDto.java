@@ -16,6 +16,7 @@ public record BlogDto(
         Category category,
         String document,
         List<ProgressDto> progresses,
+        Long viewCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -28,6 +29,7 @@ public record BlogDto(
                 .category(blog.getCategory())
                 .document(blog.getDocument())
                 .progresses(progressToDto(blog.getProgresses()))
+                .viewCount(blog.getViewCount())
                 .createdAt(blog.getCreatedAt())
                 .updatedAt(blog.getUpdatedAt())
                 .build();

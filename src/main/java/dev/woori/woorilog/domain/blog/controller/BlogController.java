@@ -8,6 +8,8 @@ import dev.woori.woorilog.global.resolver.UserId;
 import dev.woori.woorilog.global.response.ApiResponseUtil;
 import dev.woori.woorilog.global.response.BaseResponse;
 import dev.woori.woorilog.global.response.SuccessCode;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +48,11 @@ public class BlogController {
     @GetMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<?>> getBlogInfo(
             @UserId Optional<Long> userId,
-            @PathVariable("postId") Long postId
+            @PathVariable("postId") Long postId,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-        BlogDetailInfoRes res = blogService.getBlogInfo(userId, postId);
+        BlogDetailInfoRes res = blogService.getBlogInfo(userId, postId, request, response);
         return ApiResponseUtil.success(SuccessCode.OK, res);
     }
 
