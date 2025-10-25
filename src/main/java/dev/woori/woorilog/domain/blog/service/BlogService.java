@@ -82,9 +82,8 @@ public class BlogService {
     public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long blogId, boolean shouldIncreaseViewCount) {
 
         // 24시간 이내 방문한 적이 없다면 조회수 증가
-        if (shouldIncreaseViewCount) {
-            blogRepository.increaseViewCount(blogId)
-                    .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+        if (shouldIncreaseViewCount && blogRepository.existsById(blogId)) {
+            blogRepository.increaseViewCount(blogId);
         }
 
         // MultipleBagFetchException 방지를 위한 1차 조회 쿼리 (Progresses)
