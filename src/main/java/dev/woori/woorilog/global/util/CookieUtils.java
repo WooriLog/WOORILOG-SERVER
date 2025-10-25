@@ -12,6 +12,7 @@ import java.util.Optional;
 public class CookieUtils {
 
     private static final int COOKIE_MAX_AGE = 24 * 60 * 60; // 24시간
+    private static final int MAX_COOKIE_SIZE = 3000;
     private static final String NAME_PREFIX = "[";
     private static final String NAME_POSTFIX = "]";
 
@@ -35,11 +36,19 @@ public class CookieUtils {
     }
 
     public static Cookie updateCookie(Cookie oldCookie, String newValue) {
-        String updateValue = oldCookie.getValue() + "_" + newValue;
-        oldCookie.setValue(URLEncoder.encode(updateValue, StandardCharsets.UTF_8));
-        oldCookie.setPath("/");
+        String decodedValue = getDecodedCookieValue(oldCookie);
+        String tempValue = decodedValue + "_" + newValue;
+        // 쿠키 오버플로우 방지
+        String updateValue = tempValue.length() <= MAX_COOKIE_SIZE ?
+                URLEncoder.encode(tempValue, StandardCharsets.UTF_8) : URLEncoder.encode(newValue, StandardCharsets.UTF_8);
+
+        oldCookie.setValue(updateValue);
         oldCookie.setMaxAge(COOKIE_MAX_AGE);
         return oldCookie;
+    }
+
+    public static boolean isContainedValue(String originalValue, String newValue) {
+        return Arrays.stream(originalValue.split("_")).noneMatch(newValue::equals);
     }
 
     // 쿠키 조회

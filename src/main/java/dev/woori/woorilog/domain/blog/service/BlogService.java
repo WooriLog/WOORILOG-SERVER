@@ -31,6 +31,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,15 +111,19 @@ public class BlogService {
      */
     @Cacheable(value = CacheNames.HOME_BLOGS)
     public BlogHomeRes getBlogBasicInfos(int page) {
-        Page<Blog> blogPage = blogRepository.findTopOrderByCreatedAtDesc(
-                PageRequest.of(page - 1, BLOG_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending())
+        PageRequest pageRequest = PageRequest.of(
+                page - 1, BLOG_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending()
         );
 
-        List<BlogBasicInfoDto> blogBasicInfoDtoList = blogPage.stream()
+        Page<Long> blogIds = blogRepository.findBlogIds(pageRequest);
+        List<Blog> blogsWithDetailsByIds = blogRepository.findBlogsWithDetailsByIds(blogIds.getContent());
+
+
+        List<BlogBasicInfoDto> blogBasicInfoDtoList = blogsWithDetailsByIds.stream()
                 .map(BlogBasicInfoDto::create)
                 .toList();
 
-        return BlogHomeRes.of(blogPage.getNumber() + 1, blogPage.getTotalPages(), blogBasicInfoDtoList);
+        return BlogHomeRes.of(blogIds.getNumber() + 1, blogIds.getTotalPages(), blogBasicInfoDtoList);
     }
 
     /**
@@ -165,7 +170,7 @@ public class BlogService {
             String originalValue = CookieUtils.getDecodedCookieValue(originalCookie);
             String additionalValue = CookieUtils.getCookieValue(String.valueOf(blogId));
             // 조회하지 않은 게시물의 경우 조회수 + 1
-            if (!originalValue.contains(additionalValue)) {
+            if (CookieUtils.isContainedValue(originalValue, additionalValue)) {
                 blogRepository.increaseViewCount(blogId);
                 Cookie updateCookie = CookieUtils.updateCookie(originalCookie, additionalValue);
                 log.info("[UPDATE COOKIE] : {} {}", request.getLocalName(), updateCookie.getValue());
