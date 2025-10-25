@@ -34,7 +34,6 @@ public class ViewCountService {
         Optional<Cookie> optionalCookie = CookieUtils.getCookie(request, VIEW_COOKIE_NAME);
         log.debug("[Cookie] Client Address : {}", request.getRemoteAddr());
         if (optionalCookie.isEmpty()) {
-            System.out.println(true);
             // 새로운 쿠키 추가
             Cookie viewCookie = CookieUtils.createViewCookie(VIEW_COOKIE_NAME, String.valueOf(blogId), COOKIE_MAX_AGE);
             response.addCookie(viewCookie);

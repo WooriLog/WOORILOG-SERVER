@@ -15,11 +15,7 @@ import dev.woori.woorilog.domain.project.entity.Project;
 import dev.woori.woorilog.domain.project.entity.ProjectMember;
 import dev.woori.woorilog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.woorilog.global.cache.CacheNames;
-import dev.woori.woorilog.global.util.CookieUtils;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,7 +27,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

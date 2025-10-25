@@ -2,7 +2,6 @@ package dev.woori.woorilog.domain.blog.controller;
 
 import dev.woori.woorilog.domain.blog.dto.request.BlogCreateOrUpdateReq;
 import dev.woori.woorilog.domain.blog.dto.response.BlogCreateRes;
-import dev.woori.woorilog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.woorilog.domain.blog.service.BlogService;
 import dev.woori.woorilog.domain.blog.service.ViewCountService;
 import dev.woori.woorilog.global.resolver.UserId;
