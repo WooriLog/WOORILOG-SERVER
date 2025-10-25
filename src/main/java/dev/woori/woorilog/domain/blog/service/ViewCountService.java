@@ -5,10 +5,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ViewCountService {
@@ -30,6 +32,7 @@ public class ViewCountService {
 
     public void increaseViewCount(Long blogId, HttpServletRequest request, HttpServletResponse response) {
         Optional<Cookie> optionalCookie = CookieUtils.getCookie(request, VIEW_COOKIE_NAME);
+        log.debug("[Cookie] Client Address : {}", request.getRemoteAddr());
         if (optionalCookie.isEmpty()) {
             System.out.println(true);
             // 새로운 쿠키 추가

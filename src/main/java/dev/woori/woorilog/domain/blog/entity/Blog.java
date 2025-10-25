@@ -46,7 +46,6 @@ public class Blog extends BaseEntity {
     @CollectionTable(name = "tags", joinColumns = @JoinColumn(name = "blog_id"))
     private List<String> tags;
 
-    @Column(nullable = false)
     @Builder.Default
     private Long viewCount = 0L;
 
