@@ -55,5 +55,5 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Blog b SET b.viewCount = b.viewCount + 1 WHERE b.id = :id")
-    void increaseViewCount(@Param("id") Long id);
+    Optional<Blog> increaseViewCount(@Param("id") Long id);
 }
