@@ -32,14 +32,19 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     @Query("SELECT b FROM Blog b LEFT JOIN FETCH b.tags WHERE b.id = :id")
     void findBlogByIdWithTags(@Param("id") Long id);
 
-    @Query("SELECT DISTINCT b FROM Blog b " +
+    @Query("SELECT b.id FROM Blog b " +
+            "WHERE b.category != 'CHECKPOINT' "
+    )
+    Page<Long> findBlogIds(Pageable pageable);
+
+    @Query("SELECT DISTINCT b " +
+            "FROM Blog b " +
             "LEFT JOIN FETCH b.progresses " +
             "JOIN FETCH b.member " +
             "JOIN FETCH b.project " +
-            "WHERE b.category != 'CHECKPOINT' " +
-            "ORDER BY b.createdAt DESC "
-    )
-    Page<Blog> findTopOrderByCreatedAtDesc(Pageable pageable);
+            "WHERE b.id IN :ids " +
+            "ORDER BY b.createdAt DESC")
+    List<Blog> findBlogsWithDetailsByIds(@Param("ids") List<Long> ids);
 
     @Query("SELECT b.project.id as projectId, COUNT(b.id) as blogCount " +
             "FROM Blog b " +
