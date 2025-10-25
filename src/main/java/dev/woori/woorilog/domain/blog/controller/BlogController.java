@@ -4,6 +4,7 @@ import dev.woori.woorilog.domain.blog.dto.request.BlogCreateOrUpdateReq;
 import dev.woori.woorilog.domain.blog.dto.response.BlogCreateRes;
 import dev.woori.woorilog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.woorilog.domain.blog.service.BlogService;
+import dev.woori.woorilog.domain.blog.service.ViewCountService;
 import dev.woori.woorilog.global.resolver.UserId;
 import dev.woori.woorilog.global.response.ApiResponseUtil;
 import dev.woori.woorilog.global.response.BaseResponse;
@@ -24,6 +25,7 @@ import java.util.Optional;
 public class BlogController {
 
     private final BlogService blogService;
+    private final ViewCountService viewCountService;
 
     // 홈화면 블로그 목록 조회
     @GetMapping("/blog/home")
@@ -45,15 +47,19 @@ public class BlogController {
     }
 
     // 블로그 조회
-    @GetMapping("/blog/{postId}")
+    @GetMapping("/blog/{blogId}")
     public ResponseEntity<BaseResponse<?>> getBlogInfo(
             @UserId Optional<Long> userId,
-            @PathVariable("postId") Long postId,
+            @PathVariable("blogId") Long blogId,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        BlogDetailInfoRes res = blogService.getBlogInfo(userId, postId, request, response);
-        return ApiResponseUtil.success(SuccessCode.OK, res);
+        // 조회수 증가
+        boolean shouldIncreaseViewCount = viewCountService.shouldIncreaseViewCount(blogId, request);
+        if (shouldIncreaseViewCount) {
+            viewCountService.increaseViewCount(blogId, request, response);
+        }
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogInfo(userId, blogId, shouldIncreaseViewCount));
     }
 
     // 블로그 수정

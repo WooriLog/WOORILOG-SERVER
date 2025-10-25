@@ -11,18 +11,15 @@ import java.util.Optional;
 
 public class CookieUtils {
 
-    private static final int COOKIE_MAX_AGE = 24 * 60 * 60; // 24시간
     private static final int MAX_COOKIE_SIZE = 3000;
     private static final String NAME_PREFIX = "[";
     private static final String NAME_POSTFIX = "]";
 
-    public static final String VIEW_COOKIE_NAME = "postView";
-
-    public static Cookie createViewCookie(String name, String value) {
+    public static Cookie createViewCookie(String name, String value, int cookieMaxAge) {
         String cookieValue = getCookieValue(value);
         Cookie cookie = new Cookie(name, URLEncoder.encode(cookieValue, StandardCharsets.UTF_8));
-        cookie.setMaxAge(COOKIE_MAX_AGE);
-        cookie.setPath("/");
+        cookie.setMaxAge(cookieMaxAge);
+        cookie.setPath("/api/blog");
         cookie.setHttpOnly(true);
         return cookie;
     }
@@ -35,7 +32,7 @@ public class CookieUtils {
         return URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
     }
 
-    public static Cookie updateCookie(Cookie oldCookie, String newValue) {
+    public static Cookie updateCookie(Cookie oldCookie, String newValue, int cookieMaxAge) {
         String decodedValue = getDecodedCookieValue(oldCookie);
         String tempValue = decodedValue + "_" + newValue;
         // 쿠키 오버플로우 방지
@@ -43,12 +40,12 @@ public class CookieUtils {
                 URLEncoder.encode(tempValue, StandardCharsets.UTF_8) : URLEncoder.encode(newValue, StandardCharsets.UTF_8);
 
         oldCookie.setValue(updateValue);
-        oldCookie.setMaxAge(COOKIE_MAX_AGE);
+        oldCookie.setMaxAge(cookieMaxAge);
         return oldCookie;
     }
 
     public static boolean isContainedValue(String originalValue, String newValue) {
-        return Arrays.stream(originalValue.split("_")).noneMatch(newValue::equals);
+        return Arrays.asList(originalValue.split("_")).contains(newValue);
     }
 
     // 쿠키 조회

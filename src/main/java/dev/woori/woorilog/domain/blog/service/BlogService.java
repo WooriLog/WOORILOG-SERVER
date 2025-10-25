@@ -84,8 +84,10 @@ public class BlogService {
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long blogId, HttpServletRequest request, HttpServletResponse response) {
-        increaseViewCount(blogId, request, response);
+    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long blogId, boolean shouldIncreaseViewCount) {
+
+        if (shouldIncreaseViewCount)
+            blogRepository.increaseViewCount(blogId);
 
         Blog blog = blogRepository.findBlogByIdWithDetails(blogId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
@@ -154,29 +156,6 @@ public class BlogService {
     public void deleteBlog(Long userId, Long blogId) {
         Blog blog = findBlogAndCheckOwnerShip(userId, blogId);
         blogRepository.delete(blog);
-    }
-
-    private void increaseViewCount(Long blogId, HttpServletRequest request, HttpServletResponse response) {
-        Optional<Cookie> optionalCookie = CookieUtils.getCookie(request, CookieUtils.VIEW_COOKIE_NAME);
-        if (optionalCookie.isEmpty()) {
-            // 새로운 쿠키 추가
-            blogRepository.increaseViewCount(blogId);
-            Cookie viewCookie = CookieUtils.createViewCookie(CookieUtils.VIEW_COOKIE_NAME, String.valueOf(blogId));
-            log.info("[ADD COOKIE] : {} {}", request.getLocalName(), viewCookie.getValue());
-            response.addCookie(viewCookie);
-        } else {
-            // 쿠키 업데이트
-            Cookie originalCookie = optionalCookie.get();
-            String originalValue = CookieUtils.getDecodedCookieValue(originalCookie);
-            String additionalValue = CookieUtils.getCookieValue(String.valueOf(blogId));
-            // 조회하지 않은 게시물의 경우 조회수 + 1
-            if (CookieUtils.isContainedValue(originalValue, additionalValue)) {
-                blogRepository.increaseViewCount(blogId);
-                Cookie updateCookie = CookieUtils.updateCookie(originalCookie, additionalValue);
-                log.info("[UPDATE COOKIE] : {} {}", request.getLocalName(), updateCookie.getValue());
-                response.addCookie(updateCookie);
-            }
-        }
     }
 
     /**
