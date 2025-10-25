@@ -82,7 +82,7 @@ public class BlogService {
     public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long blogId, boolean shouldIncreaseViewCount) {
 
         // 24시간 이내 방문한 적이 없다면 조회수 증가
-        if (shouldIncreaseViewCount && blogRepository.existsById(blogId)) {
+        if (shouldIncreaseViewCount) {
             blogRepository.increaseViewCount(blogId);
         }
 
