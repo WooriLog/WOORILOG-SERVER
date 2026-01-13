@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomBaseException.class)
-    public ResponseEntity<BaseResponse<?>> handleCustomBaseException(final CustomBaseException e) {
+    public ResponseEntity<BaseResponse<Void>> handleCustomBaseException(final CustomBaseException e) {
         logWarn(e);
         return ApiResponseUtil.failure(e.getErrorCode()); // 409/메시지 등 ErrorCode 기반으로 응답
     }
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<BaseResponse<?>> handleCustomException(final CustomException e) {
+    public ResponseEntity<BaseResponse<Void>> handleCustomException(final CustomException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
     }
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : @Valid 유효성 검사 오류 (Request Body)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseResponse<?>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+    public ResponseEntity<BaseResponse<Void>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         final String errorMessage = e.getBindingResult().getAllErrors().stream()
                 .map(error -> {
                     if (error instanceof FieldError fe) {
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 필수 파라미터가 존재하지 않음
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<BaseResponse<?>> handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
+    public ResponseEntity<BaseResponse<Void>> handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         final String errorMessage = "누락 파라미터 : " + e.getParameterName();
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.MISSING_PARAM, errorMessage);
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : JSON 바인딩 오류 || @RequestBody 필수 값 오류 || @RequestBody 데이터 자료형 오류 || 데이터 포맷 오류
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<BaseResponse<?>> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
+    public ResponseEntity<BaseResponse<Void>> handleHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
         logWarn(e);
         // JSON 매핑 오류
         if (e.getCause() instanceof JsonMappingException jsonMappingException) {
@@ -96,7 +96,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 잘못된 인자값 전달로 인한 오류
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<BaseResponse<?>> handleIllegalArgumentException(final IllegalArgumentException e) {
+    public ResponseEntity<BaseResponse<Void>> handleIllegalArgumentException(final IllegalArgumentException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_ILLEGALARGUMENTS);
     }
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 등록되지 않은 사용자로 요청했을 때 발생
      */
     @ExceptionHandler(UnEnrolledException.class)
-    public ResponseEntity<BaseResponse<?>> handleUnEnrolledException(final UnEnrolledException e) {
+    public ResponseEntity<BaseResponse<Void>> handleUnEnrolledException(final UnEnrolledException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.UNENROLLED, e.getMessage());
     }
 
@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 유효하지 않은 토큰으로 요청했을 때 발생
      */
     @ExceptionHandler(JwtTokenInvalidException.class)
-    public ResponseEntity<BaseResponse<?>> handleInvalidTokenException(final JwtTokenInvalidException e) {
+    public ResponseEntity<BaseResponse<Void>> handleInvalidTokenException(final JwtTokenInvalidException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.UNAUTHORIZED);
     }
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 유효기간이 만료된 토큰으로 요청했을 때 발생
      */
     @ExceptionHandler(JwtTokenExpiredException.class)
-    public ResponseEntity<BaseResponse<?>> handleExpiredTokenException(final JwtTokenExpiredException e) {
+    public ResponseEntity<BaseResponse<Void>> handleExpiredTokenException(final JwtTokenExpiredException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.EXPIRED_TOKEN);
     }
@@ -135,7 +135,7 @@ public class GlobalExceptionHandler {
      * 예외 내용: 사용자가 허가되지 않은 자원에 접근할 때 발생
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<BaseResponse<?>> handleAccessDeniedException(final AccessDeniedException e) {
+    public ResponseEntity<BaseResponse<Void>> handleAccessDeniedException(final AccessDeniedException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.FORBIDDEN, e.getMessage());
     }
@@ -145,7 +145,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 리소스에 대한 엔티티를 찾을 수 없는 오류
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<BaseResponse<?>> handleEntityNotFoundException(final EntityNotFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleEntityNotFoundException(final EntityNotFoundException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_ENTITY, e.getMessage());
     }
 
@@ -154,7 +154,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 잘못된 api로 요청했을 때 발생
      */
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<BaseResponse<?>> handleNoHandlerFoundException(final NoHandlerFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleNoHandlerFoundException(final NoHandlerFoundException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_API);
     }
@@ -164,7 +164,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 잘못된 엔드포인트로 요청했을 때 발생
      */
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<BaseResponse<?>> handleNoResourceFoundException(final NoResourceFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleNoResourceFoundException(final NoResourceFoundException e) {
         return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_API);
     }
 
@@ -173,7 +173,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 잘못된 HTTP METHOD로 요청했을 때 발생
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<BaseResponse<?>> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<BaseResponse<Void>> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.METHOD_NOT_ALLOWED);
     }
@@ -183,7 +183,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : DB 제약조건 위반 에러 (FK/NOT NULL 등)
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<BaseResponse<?>> handleDataIntegrity(DataIntegrityViolationException e) {
+    public ResponseEntity<BaseResponse<Void>> handleDataIntegrity(DataIntegrityViolationException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.DB_CONFLICT);
     }
@@ -193,7 +193,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 트랜잭션 관련 에러
      */
     @ExceptionHandler(TransactionSystemException.class)
-    public ResponseEntity<BaseResponse<?>> handleTx(TransactionSystemException e) {
+    public ResponseEntity<BaseResponse<Void>> handleTx(TransactionSystemException e) {
         logWarn(e);
         Throwable root = NestedExceptionUtils.getMostSpecificCause(e);
         if (root instanceof ConstraintViolationException cve) {
@@ -210,7 +210,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : URL 디코딩시 에러 발생
      */
     @ExceptionHandler(UnsupportedEncodingException.class)
-    public ResponseEntity<BaseResponse<?>> handleUrlDecodeException(final UnsupportedEncodingException e) {
+    public ResponseEntity<BaseResponse<Void>> handleUrlDecodeException(final UnsupportedEncodingException e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.URL_DECODE_ERROR);
     }
@@ -220,7 +220,7 @@ public class GlobalExceptionHandler {
      * 예외 내용 : 서버 내부 오류
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<BaseResponse<?>> handleServerException(final Exception e) {
+    public ResponseEntity<BaseResponse<Void>> handleServerException(final Exception e) {
         logWarn(e);
         return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR);
     }

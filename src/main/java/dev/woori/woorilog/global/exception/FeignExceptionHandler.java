@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class FeignExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
-    public ResponseEntity<BaseResponse<?>> handleFeignException(FeignException e) {
+    public ResponseEntity<BaseResponse<Void>> handleFeignException(FeignException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 }
