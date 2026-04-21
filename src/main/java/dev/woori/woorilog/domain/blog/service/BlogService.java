@@ -17,6 +17,7 @@ import dev.woori.woorilog.domain.project.repository.ProjectMemberRepository;
 import dev.woori.woorilog.global.cache.CacheNames;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 import static dev.woori.woorilog.global.response.error.ErrorMessage.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -73,13 +75,23 @@ public class BlogService {
      * 글을 열람하기 위한 글과 작성자, 작성 프로젝트 응답을 생성합니다.
      * 하위 DTO를 생성하고 조립한 응답을 생성해 리턴합니다.
      * 
-     * @param postId 열람할 글 id
+     * @param blogId 열람할 글 id
      * @return BlogDetailInfoRes: 열람할 글, 작성자, 작성 프로젝트의 정보
      */
     @Transactional
-    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long postId) {
-        Blog blog = blogRepository.findBlogByIdWithDetails(postId)
+    public BlogDetailInfoRes getBlogInfo(Optional<Long> memberId, Long blogId, boolean shouldIncreaseViewCount) {
+
+        // 24시간 이내 방문한 적이 없다면 조회수 증가
+        if (shouldIncreaseViewCount) {
+            blogRepository.increaseViewCount(blogId);
+        }
+
+        // MultipleBagFetchException 방지를 위한 1차 조회 쿼리 (Progresses)
+        Blog blog = blogRepository.findBlogByIdWithDetails(blogId)
                 .orElseThrow(() -> new EntityNotFoundException(BLOG_NOT_FOUND));
+
+        // MultipleBagFetchException 방지를 위한 2차 조회 쿼리 (Tags)
+        blogRepository.findBlogByIdWithTags(blogId);
 
         Project project = blog.getProject();
         Member author = blog.getMember();
@@ -100,15 +112,19 @@ public class BlogService {
      */
     @Cacheable(value = CacheNames.HOME_BLOGS)
     public BlogHomeRes getBlogBasicInfos(int page) {
-        Page<Blog> blogPage = blogRepository.findAll(
-                PageRequest.of(page - 1, BLOG_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending())
+        PageRequest pageRequest = PageRequest.of(
+                page - 1, BLOG_PAGE_SIZE, Sort.by(SORT_CRITERIA).descending()
         );
 
-        List<BlogBasicInfoDto> blogBasicInfoDtoList = blogPage.stream()
+        Page<Long> blogIds = blogRepository.findBlogIds(pageRequest);
+        List<Blog> blogsWithDetailsByIds = blogRepository.findBlogsWithDetailsByIds(blogIds.getContent());
+
+
+        List<BlogBasicInfoDto> blogBasicInfoDtoList = blogsWithDetailsByIds.stream()
                 .map(BlogBasicInfoDto::create)
                 .toList();
 
-        return BlogHomeRes.of(blogPage.getNumber() + 1, blogPage.getTotalPages(), blogBasicInfoDtoList);
+        return BlogHomeRes.of(blogIds.getNumber() + 1, blogIds.getTotalPages(), blogBasicInfoDtoList);
     }
 
     /**

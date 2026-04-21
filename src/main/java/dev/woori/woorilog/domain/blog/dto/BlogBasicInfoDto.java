@@ -21,6 +21,7 @@ public record BlogBasicInfoDto(
         Category category,
         List<String> tags,
         List<ProgressDto> progresses,
+        Long viewCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -36,6 +37,7 @@ public record BlogBasicInfoDto(
                 .category(blog.getCategory())
                 .tags(blog.getTags())
                 .progresses(toProgressDtoList(blog.getProgresses()))
+                .viewCount(blog.getViewCount())
                 .createdAt(blog.getCreatedAt())
                 .updatedAt(blog.getUpdatedAt())
                 .build();

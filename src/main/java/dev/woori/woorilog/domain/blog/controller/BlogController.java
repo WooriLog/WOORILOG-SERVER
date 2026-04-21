@@ -5,10 +5,13 @@ import dev.woori.woorilog.domain.blog.dto.response.BlogCreateRes;
 import dev.woori.woorilog.domain.blog.dto.response.BlogDetailInfoRes;
 import dev.woori.woorilog.domain.blog.dto.response.BlogHomeRes;
 import dev.woori.woorilog.domain.blog.service.BlogService;
+import dev.woori.woorilog.domain.blog.service.ViewCountService;
 import dev.woori.woorilog.global.resolver.UserId;
 import dev.woori.woorilog.global.response.ApiResponseUtil;
 import dev.woori.woorilog.global.response.BaseResponse;
 import dev.woori.woorilog.global.response.SuccessCode;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class BlogController {
 
     private final BlogService blogService;
+    private final ViewCountService viewCountService;
 
     // 홈화면 블로그 목록 조회
     @GetMapping("/blog/home")
@@ -47,10 +51,16 @@ public class BlogController {
     @GetMapping("/blog/{postId}")
     public ResponseEntity<BaseResponse<BlogDetailInfoRes>> getBlogInfo(
             @UserId Optional<Long> userId,
-            @PathVariable("postId") Long postId
+            @PathVariable("blogId") Long blogId,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-        BlogDetailInfoRes res = blogService.getBlogInfo(userId, postId);
-        return ApiResponseUtil.success(SuccessCode.OK, res);
+        // 조회수 증가
+        boolean shouldIncreaseViewCount = viewCountService.shouldIncreaseViewCount(blogId, request);
+        if (shouldIncreaseViewCount) {
+            viewCountService.increaseViewCount(blogId, request, response);
+        }
+        return ApiResponseUtil.success(SuccessCode.OK, blogService.getBlogInfo(userId, blogId, shouldIncreaseViewCount));
     }
 
     // 블로그 수정
